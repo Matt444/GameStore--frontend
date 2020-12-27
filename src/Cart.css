@@ -1,0 +1,7 @@
+.btn-group .btn {
+   border-radius: 0;
+}
+
+.no-border-top {
+    border-top: 0px !important;
+}

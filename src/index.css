@@ -11,3 +11,53 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* fonts */
+
+/* Body/ Base text */
+.fbbt {
+  font-style: normal;
+  font-weight: normal !important;
+  font-size: 16px !important;
+  line-height: 22px !important;
+}
+
+/* Body/Small */
+.fbs {
+  font-style: normal;
+  font-weight: normal !important;
+  font-size: 12px !important;
+  line-height: 15px !important;
+}
+
+/* Lead/Text - Regular */
+.fltr {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 21px;
+  line-height: 36px;
+}
+
+
+/* hover effects on icons */
+
+
+.icon:hover svg {
+  fill: black;
+}
+
+.clear-borders {
+  border: 0px !important;
+}
+
+.dropdown-fullw-light button {
+  width: 100%;
+  text-align: left;
+  border-color: #ced4da;
+}
+
+.dropdown-fullw-light button::after {
+  position: absolute;
+  top: 18px;
+  right: 12px;
+}
