@@ -39,14 +39,14 @@ export const Admin_keys = () => (
                 <tr>
                     <td>7EY04-J6046-8FTHH</td>
                     <td>Tak</td>
-                    <td style={{ width: "120px" }}>
+                    <td style={{ width: "60px" }}>
                         <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
                     </td>
                 </tr>
                 <tr>
                     <td>7EY04-J6046-8FTHH</td>
                     <td>Nie</td>
-                    <td style={{ width: "120px" }}>
+                    <td style={{ width: "60px" }}>
                         <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
                     </td>
                 </tr>
@@ -67,14 +67,14 @@ export const Admin_keys = () => (
                 <tr>
                     <td>7EY04-J6046-8FTHH</td>
                     <td>Tak</td>
-                    <td style={{ width: "120px" }}>
+                    <td style={{ width: "60px" }}>
                         <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
                     </td>
                 </tr>
                 <tr>
                     <td>7EY04-J6046-8FTHH</td>
                     <td>Nie</td>
-                    <td style={{ width: "120px" }}>
+                    <td style={{ width: "60px" }}>
                         <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
                     </td>
                 </tr>
