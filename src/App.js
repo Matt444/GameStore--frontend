@@ -10,6 +10,7 @@ import { Admin_orders } from './Admin_orders';
 import { Admin_users } from './Admin_users';
 import { Admin_keys } from './Admin_keys';
 import { Admin_platforms } from './Admin_platforms';
+import { Admin_categories } from './Admin_categories';
 import { Game } from './Game';
 import { NoMatch } from './NoMatch';
 import { Layout } from './components/Layout';
@@ -33,6 +34,7 @@ function App() {
             <Route path="/admin/users" component={Admin_users} />
             <Route path="/admin/keys" component={Admin_keys} />
             <Route path="/admin/platforms" component={Admin_platforms} />
+            <Route path="/admin/categories" component={Admin_categories} />
             <Route component={NoMatch} />
           </Switch>
         </Router>
