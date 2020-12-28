@@ -8,16 +8,16 @@ export const Admin_keys = () => (
         <p className="fltr">Dodaj klucz</p>
         <Form className="mb-2">
             <Row>
-                <Col md={3} className="mb-2">
+                <Col lg={3} className="mb-2">
                     <DropdownButton className="dropdown-fullw-light" id="dropdown-basic-button" variant="outline-secondary" title="Nazwa gry">
                         <Dropdown.Item href="#/action-1">...</Dropdown.Item>
                         <Dropdown.Item href="#/action-2">...</Dropdown.Item>
                     </DropdownButton>
                 </Col>
-                <Col md={7}>
+                <Col lg={7} className="mb-2">
                     <Form.Control type="text" placeholder="Klucz" />
                 </Col>
-                <Col md={2} className="mb-2">
+                <Col lg={2} className="mb-2">
                     <Button className="w-100" type="submit" variant="dark">Dodaj</Button>
                 </Col>
             </Row>
