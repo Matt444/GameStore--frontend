@@ -8,6 +8,7 @@ import { User_orders } from './User_orders';
 import { User_edit } from './User_edit';
 import { Admin_orders } from './Admin_orders';
 import { Admin_users } from './Admin_users';
+import { Admin_keys } from './Admin_keys';
 import { Game } from './Game';
 import { NoMatch } from './NoMatch';
 import { Layout } from './components/Layout';
@@ -29,6 +30,7 @@ function App() {
             <Route path="/myaccount/edit" component={User_edit} />
             <Route path="/admin/orders" component={Admin_orders} />
             <Route path="/admin/users" component={Admin_users} />
+            <Route path="/admin/keys" component={Admin_keys} />
             <Route component={NoMatch} />
           </Switch>
         </Router>
