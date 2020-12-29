@@ -61,3 +61,36 @@ code {
   top: 18px;
   right: 12px;
 }
+
+.dropdownmulti-light {
+  border-color: #ced4da !important;
+  color:#6c757d !important;
+}
+
+.dropdownmulti-light::after {
+  position: absolute;
+  top: 18px;
+  right: 12px;
+}
+
+.calendar {
+  width: 100% !important;
+  height: 38px !important;
+  border-color: #ced4da !important;
+  border-radius: 4px !important;
+
+}
+
+.calendar .react-date-picker__inputGroup {
+  padding-left: 10px !important;
+}
+
+.calendar .react-date-picker__inputGroup input {
+  color:#6c757d !important;
+}
+
+.calendar .react-date-picker__wrapper {
+  border-color: #ced4da !important;
+  border-radius: 4px !important;
+  color:#6c757d !important;
+}
