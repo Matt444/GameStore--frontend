@@ -1,3 +1,6 @@
+# Designed according to Figma project
+https://www.figma.com/file/KfGp9R4EPAuza4mP0AGZw0/AGH-DB-project-Shop-with-games?node-id=6%3A567
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
