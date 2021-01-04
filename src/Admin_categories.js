@@ -6,6 +6,7 @@ import { XCircle } from 'react-bootstrap-icons';
 
 export const Admin_categories = () => {
     const [categories, setCategories] = useState([]);
+    const [category, setCategory] = useState("");
     useEffect(() => {
         fetch("/categories").then(response =>
             response.json().then(data => {
@@ -13,7 +14,6 @@ export const Admin_categories = () => {
             })
         );
     }, []);
-    console.log(categories)
     return (
 
         <LayoutAdmin>
@@ -21,10 +21,16 @@ export const Admin_categories = () => {
             <Form className="mb-2">
                 <Row>
                     <Col lg={3} className="mb-2">
-                        <Form.Control type="text" placeholder="Nazwa"/>
+                        <Form.Control type="text" placeholder="Nazwa" onChange={e => setCategory(e.target.value)}/>
                     </Col>
                     <Col lg={2} className="mb-2">
-                        <Button className="w-100" type="submit" variant="dark">Dodaj</Button>
+                        <Button className="w-100" type="submit" variant="dark" onClick={async () => {
+                            var requestOptions = {
+                                method: 'POST'
+                            };
+                            fetch("/addcategory?name=" + category, requestOptions)
+
+                        }}>Dodaj</Button>
                     </Col>
                 </Row>
 
@@ -40,28 +46,22 @@ export const Admin_categories = () => {
                 </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                    <td>Strategiczne</td>
-                    <td style={{width: "60px"}}>
-                        <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20}/>
-                        </Button>
-                    </td>
-                </tr>
+
                 {categories.map(category =>
                     <tr>
                         <td>{category.name.charAt(0).toUpperCase() + category.name.slice(1)}</td>
                         <td style={{width: "60px"}}>
-                            <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20}/>
+                            <Button className="icon p-0" variant="link" onClick={async () => {
+                                var requestOptions = {
+                                    method: 'POST'
+                                };
+                                fetch("/delcategory?name=" + category.name, requestOptions)
+                                window.location.reload()
+                            }}><XCircle className="text-black-50" size={20}/>
                             </Button>
                         </td>
                     </tr>)}
-                <tr>
-                    <td>Przygodowe</td>
-                    <td style={{width: "60px"}}>
-                        <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20}/>
-                        </Button>
-                    </td>
-                </tr>
+
                 <tr>
                     <td colspan="2"></td>
                 </tr>
