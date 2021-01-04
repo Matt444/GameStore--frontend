@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Row, Col, Form, Button, Image, Card, Pagination } from 'react-bootstrap';
 import { Search, CartPlus } from 'react-bootstrap-icons';
 import bkg from './home.jpg';
@@ -6,6 +6,13 @@ import min from './min.jpg';
 import './Home.css';
 
 export const Home = () => {
+    useEffect(() => {
+        fetch("/categories").then(response =>
+            response.json().then(data => {
+                console.log(data)
+            })
+        );
+    }, []);
     return (
         <div>
             <Row>
