@@ -94,3 +94,11 @@ code {
   border-radius: 4px !important;
   color:#6c757d !important;
 }
+
+.active  svg {
+  fill: black !important;
+}
+
+.active {
+  color: black !important;
+}
