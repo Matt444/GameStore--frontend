@@ -34,8 +34,6 @@ const AdminOrder = (props) => {
 }
 
 export const Admin_orders = (props) => {
-    console.log(props.token);
-    console.log(props.role);
     if(!props.token || props.role != 'admin')
         return <Forbidden />;
 

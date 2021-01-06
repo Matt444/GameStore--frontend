@@ -40,11 +40,21 @@ function App() {
             <Route path="/admin/orders" >
               <Admin_orders token={token} role={role} />
             </Route>
-            <Route path="/admin/users" component={Admin_users} />
-            <Route path="/admin/keys" component={Admin_keys} />
-            <Route path="/admin/platforms" component={Admin_platforms} />
-            <Route path="/admin/categories" component={Admin_categories} />
-            <Route path='/admin/games' component={Admin_games} />
+            <Route path="/admin/games" >
+              <Admin_games token={token} role={role} />
+            </Route>
+            <Route path="/admin/keys" >
+              <Admin_keys token={token} role={role} />
+            </Route>
+            <Route path="/admin/platforms" >
+              <Admin_platforms token={token} role={role} />
+            </Route>
+            <Route path="/admin/categories" >
+              <Admin_categories token={token} role={role} />
+            </Route>
+            <Route path="/admin/users" >
+              <Admin_users token={token} role={role} />
+            </Route>
             <Route component={NoMatch} />
           </Switch>
         </Router>

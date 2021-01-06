@@ -1,48 +1,54 @@
 import React from 'react';
+import { Forbidden } from './Forbidden';
 import { Table, Form, Button, Row, Col, DropdownButton, Dropdown } from 'react-bootstrap';
 import { LayoutAdmin } from './components/LayoutAdmin';
 import { XCircle } from 'react-bootstrap-icons';
 
-export const Admin_platforms = () => (
-    <LayoutAdmin>
-        <p className="fltr">Dodaj platformę</p>
-        <Form className="mb-2">
-            <Row>
-                <Col lg={3} className="mb-2">
-                    <Form.Control type="text" placeholder="Nazwa" />
-                </Col>
-                <Col lg={2} className="mb-2">
-                    <Button className="w-100" type="submit" variant="dark">Dodaj</Button>
-                </Col>
-            </Row>
-            
-        </Form>
+export const Admin_platforms = (props) => {
+    if(!props.token || props.role != 'admin')
+        return <Forbidden />;
 
-        <p className="fltr">Wszystkie platformy</p>
+    return (
+        <LayoutAdmin>
+            <p className="fltr">Dodaj platformę</p>
+            <Form className="mb-2">
+                <Row>
+                    <Col lg={3} className="mb-2">
+                        <Form.Control type="text" placeholder="Nazwa" />
+                    </Col>
+                    <Col lg={2} className="mb-2">
+                        <Button className="w-100" type="submit" variant="dark">Dodaj</Button>
+                    </Col>
+                </Row>
+                
+            </Form>
 
-        <Table responsive>
-            <thead>
-                <tr>
-                    <th className="no-border-top">Nazwa</th>
-                    <th className="no-border-top"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>PC</td>
-                    <td style={{ width: "60px" }}>
-                        <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>PS4</td>
-                    <td style={{ width: "60px" }}>
-                        <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
-                    </td>
-                </tr>
-                <tr><td colspan="2"></td></tr>
-            </tbody>
-        </Table>
+            <p className="fltr">Wszystkie platformy</p>
 
-    </LayoutAdmin>
-);
+            <Table responsive>
+                <thead>
+                    <tr>
+                        <th className="no-border-top">Nazwa</th>
+                        <th className="no-border-top"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>PC</td>
+                        <td style={{ width: "60px" }}>
+                            <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>PS4</td>
+                        <td style={{ width: "60px" }}>
+                            <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
+                        </td>
+                    </tr>
+                    <tr><td colspan="2"></td></tr>
+                </tbody>
+            </Table>
+
+        </LayoutAdmin>
+    );
+}

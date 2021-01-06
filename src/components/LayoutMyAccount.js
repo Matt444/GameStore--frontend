@@ -9,20 +9,22 @@ function isActiveSideNav(addr) {
     }
 }
 
-export const LayoutMyAccount = (props, isActive) => (
-    <main className="mt-5">
-        <h1 className='font-weight-bold mb-4'>My account</h1>
-        <Row>
-            <Col sm={3}>
-                <p className="mb-2"><a className={isActiveSideNav('/myaccount/orders')} href="/myaccount/orders">Moje zamówienia</a></p>
-                <p className="mb-2"><a className={isActiveSideNav('/myaccount/edit')} href="/myaccount/edit" >Edytuj konto</a></p>
-                <p className="mb-2"><a className={isActiveSideNav('/myaccount/logout')} href="/myaccount/logout" >Wyloguj się</a></p>
-                
-            </Col>
+export const LayoutMyAccount = (props, isActive) => {
+    return(
+        <main className="mt-5">
+            <h1 className='font-weight-bold mb-4'>My account</h1>
+            <Row>
+                <Col sm={3}>
+                    <p className="mb-2"><a className={isActiveSideNav('/myaccount/orders')} href="/myaccount/orders">Moje zamówienia</a></p>
+                    <p className="mb-2"><a className={isActiveSideNav('/myaccount/edit')} href="/myaccount/edit" >Edytuj konto</a></p>
+                    <p className="mb-2"><a className="fltr text-black-50" href="/" onClick={ () => localStorage.clear() }>Wyloguj się</a></p>
+                    
+                </Col>
 
-            <Col sm={9}>
-                {props.children}
-            </Col>
-        </Row>
-    </main>
-)
+                <Col sm={9}>
+                    {props.children}
+                </Col>
+            </Row>
+        </main>
+    );
+}
