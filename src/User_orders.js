@@ -1,4 +1,5 @@
 import React from 'react';
+import { Forbidden } from './Forbidden';
 import { TableGames } from './components/TableGames';
 import { LayoutMyAccount } from './components/LayoutMyAccount';
 
@@ -30,8 +31,13 @@ const UserOrder = (props) => {
     );
 }
 
-export const User_orders = () => (
-    <LayoutMyAccount>
-        {  orders.map( (order) => <UserOrder order={order} /> ) }
-    </LayoutMyAccount>
-);
+export const User_orders = (props) => {
+    if(!props.token)
+        return <Forbidden />;
+
+    return (
+        <LayoutMyAccount>
+            {  orders.map( (order) => <UserOrder order={order} /> ) }
+        </LayoutMyAccount>
+    );
+}

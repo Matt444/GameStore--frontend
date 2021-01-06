@@ -35,8 +35,12 @@ function App() {
             <Route path='/Login' >
               <Login setToken={setToken} setRole={setRole} />
             </Route>
-            <Route path="/myaccount/orders" component={User_orders} />
-            <Route path="/myaccount/edit" component={User_edit} />
+            <Route path="/myaccount/orders" >
+              <User_orders token={token} />
+            </Route>
+            <Route path="/myaccount/edit" >
+              <User_edit token={token} />
+            </Route>
             <Route path="/admin/orders" >
               <Admin_orders token={token} role={role} />
             </Route>
