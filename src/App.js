@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Home } from './Home';
@@ -16,22 +16,30 @@ import { Game } from './Game';
 import { NoMatch } from './NoMatch';
 import { Layout } from './components/Layout';
 import { NavigationBar } from './components/NavigationBar';
-
+import useToken from './components/useToken';
+import useRole from './components/useRole';
 
 function App() {
+  const { token, setToken } = useToken();
+  const { role, setRole } = useRole();
+
   return (
     <React.Fragment>
       <Layout>
-        <NavigationBar />
+        <NavigationBar token={token} />
         <Router>
           <Switch>
             <Route exact path="/" component={Home} />
             <Route path="/Cart" component={Cart} />
             <Route path='/Game' component={Game} />
-            <Route path='/Login' component={Login} />
+            <Route path='/Login' >
+              <Login setToken={setToken} setRole={setRole} />
+            </Route>
             <Route path="/myaccount/orders" component={User_orders} />
             <Route path="/myaccount/edit" component={User_edit} />
-            <Route path="/admin/orders" component={Admin_orders} />
+            <Route path="/admin/orders" >
+              <Admin_orders token={token} role={role} />
+            </Route>
             <Route path="/admin/users" component={Admin_users} />
             <Route path="/admin/keys" component={Admin_keys} />
             <Route path="/admin/platforms" component={Admin_platforms} />

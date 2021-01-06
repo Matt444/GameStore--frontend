@@ -1,4 +1,5 @@
 import React from 'react';
+import { Forbidden } from './Forbidden';
 import { TableGames } from './components/TableGames';
 import { LayoutAdmin } from './components/LayoutAdmin';
 
@@ -32,8 +33,15 @@ const AdminOrder = (props) => {
     );
 }
 
-export const Admin_orders = () => (
-    <LayoutAdmin>
-        { orders.map( (order) => <AdminOrder order={order} /> ) }
-    </LayoutAdmin>
-);
+export const Admin_orders = (props) => {
+    console.log(props.token);
+    console.log(props.role);
+    if(!props.token || props.role != 'admin')
+        return <Forbidden />;
+
+    return(
+        <LayoutAdmin>
+            { orders.map( (order) => <AdminOrder order={order} /> ) }
+        </LayoutAdmin>
+    );
+}
