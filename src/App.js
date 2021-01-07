@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Home } from './Home';
 import { Cart } from './Cart';
 import { Login } from './Login';
+import { Register } from './Register';
 import { User_orders } from './User_orders';
 import { User_edit } from './User_edit';
 import { Admin_orders } from './Admin_orders';
@@ -29,6 +30,7 @@ function App() {
             <Route path="/Cart" component={Cart} />
             <Route path='/Game' component={Game} />
             <Route path='/Login' component={Login} />
+            <Route path='/Register' component={Register} />
             <Route path="/myaccount/orders" component={User_orders} />
             <Route path="/myaccount/edit" component={User_edit} />
             <Route path="/admin/orders" component={Admin_orders} />

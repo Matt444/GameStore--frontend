@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Table, Form, Button, Row, Col, DropdownButton, Dropdown } from 'react-bootstrap';
 import { LayoutAdmin } from './components/LayoutAdmin';
 import { BoxArrowUpRight, PencilSquare, XCircle } from 'react-bootstrap-icons';
@@ -9,6 +9,36 @@ import DatePicker from 'react-date-picker';
 
 export const Admin_games = () => {
     const [value, onChange] = useState(new Date());
+    const [name, setName] = useState();
+    const [category, setCategory] = useState();
+    const [quantity, setQuantity] = useState();
+    const [platform, setPlatform] = useState();
+    const [age, setAge] = useState();
+    const [price, setPrice] = useState();
+
+    const [categories, setCategories] = useState([""]);
+
+
+    useEffect(  () => {
+         fetch("/categories").then(response =>
+            response.json().then(data => {
+                setCategories(data.categories);
+            })
+        );
+
+    }, []);
+
+    useEffect(  () => {
+        fetch("/platforms").then(response =>
+            response.json().then(data => {
+                setPlatform(data);
+            })
+        );
+    }, []);
+    console.log(platform)
+    let arr = [];
+    categories.map(cat => arr.push(cat.name));
+    console.log(arr)
 
     return (
     <LayoutAdmin>
@@ -16,26 +46,26 @@ export const Admin_games = () => {
         <Form className="mb-2">
             <Row>
                 <Col lg={6} className="mb-2">
-                    <Form.Control type="text" placeholder="Nazwa" />
+                    <Form.Control type="text" placeholder="Nazwa" onChange={e => setName(e.target.value)}/>
                 </Col>
                 <Col lg={2} className="mb-2">
-                    <Form.Control type="text" placeholder="Cena (zł)" />
+                    <Form.Control type="text" placeholder="Cena (zł)" onChange={e => setPrice(e.target.value)}/>
                 </Col>
                 <Col lg={4} className="mb-2">
-                    <Form.Control type="text" placeholder="Ilość wersji pudełkowej" />
+                    <Form.Control type="text" placeholder="Ilość wersji pudełkowej" onChange={e => setQuantity(e.target.value)}/>
                 </Col>
                 
             </Row>
             <Row>
                 <Col lg={3}>
                     <DropdownMultiselect buttonClass="mb-2 dropdownmulti-light" placeholder="Kategorie"
-                        options={["Strategiczne", "Przygodowe", "Strzelanki"]}
+                        options={["Przygodowe", "Strategiczne", "Inne"]}
                         name="countries"
                     />
                     
                     <DropdownButton className="mb-2 dropdown-fullw-light" variant="outline-secondary" id="dropdown-basic-button" title="Platforma">
-                        <Dropdown.Item href="#/action-1">PC</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2">PS4</Dropdown.Item>
+                        {platform.map(plat =>
+                            <Dropdown.Item>{plat.name}</Dropdown.Item>)}
                     </DropdownButton>
                 </Col>
                 <Col lg={3}>
