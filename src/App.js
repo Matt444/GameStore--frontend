@@ -16,6 +16,7 @@ import { Game } from './Game';
 import { NoMatch } from './NoMatch';
 import { Layout } from './components/Layout';
 import { NavigationBar } from './components/NavigationBar';
+import { Register } from './Register';
 import useToken from './components/useToken';
 import useRole from './components/useRole';
 
@@ -32,6 +33,7 @@ function App() {
             <Route exact path="/" component={Home} />
             <Route path="/Cart" component={Cart} />
             <Route path='/Game' component={Game} />
+            <Route path="/Register" component={Register}/>
             <Route path='/Login' >
               <Login setToken={setToken} setRole={setRole} />
             </Route>

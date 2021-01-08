@@ -45,8 +45,7 @@ export const Admin_categories = (props) => {
                                 .then(res => res.json())
                                 .then(data => {
                                     console.log(data);
-                                });
-                            window.location.reload()
+                                }).then(() => categories.push(category));
                         }}>Dodaj</Button>
                     </Col>
                 </Row>
@@ -68,7 +67,7 @@ export const Admin_categories = (props) => {
                     <tr>
                         <td>{category.name.charAt(0).toUpperCase() + category.name.slice(1)}</td>
                         <td style={{width: "60px"}}>
-                            <Button className="icon p-0" variant="link" onClick={ (e) => {
+                            <Button className="icon p-0" variant="link" onClick={ async (e) => {
                                 e.preventDefault();
 
                                 var myHeaders = new Headers();
@@ -81,8 +80,8 @@ export const Admin_categories = (props) => {
                                     headers: myHeaders,
                                     body: raw
                                 };
-                                fetch("/delcategory", requestOptions);
-                                window.location.reload()
+                                await fetch("/delcategory", requestOptions)
+                                    .then(() => window.location.reload());
                             }}><XCircle className="text-black-50" size={20}/>
                             </Button>
                         </td>
@@ -96,4 +95,4 @@ export const Admin_categories = (props) => {
 
         </LayoutAdmin>
     );
-};
+}
