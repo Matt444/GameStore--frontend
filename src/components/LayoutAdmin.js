@@ -9,7 +9,7 @@ function isActiveSideNav(addr) {
     }
 }
 
-export const LayoutAdmin = (props, isActive) => {
+export const LayoutAdmin = (props) => {
     return (
         <main className="mt-5">
             <h1 className='font-weight-bold mb-4'>Hello Admin</h1>

@@ -26,7 +26,7 @@ function App() {
   return (
     <React.Fragment>
       <Layout>
-        <NavigationBar token={token} />
+        <NavigationBar token={token} role={role} />
         <Router>
           <Switch>
             <Route exact path="/" component={Home} />

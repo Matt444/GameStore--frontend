@@ -33,7 +33,7 @@ export const Login = ({ setToken, setRole }) => {
                         if(res.ok) {
                             return res.json();
                         } else {
-                            errors.password = "Invalid username or password";
+                            errors.setFieldError('all', 'Invalid username or password');
                             throw new Error('Invalid username or password');
                         }
                     })
@@ -54,13 +54,13 @@ export const Login = ({ setToken, setRole }) => {
 
                 <Form onSubmit={handleSubmit}>
                     <Form.Control  type="text" name="username" value={values.username} placeholder="Username" onChange={handleChange}
-                        isInvalid={touched.username && !!errors.username} isValid={touched.username && !errors.username} />
+                        isInvalid={touched.username && !!errors.username} />
                     <Form.Control.Feedback  type="invalid">{errors.username}</Form.Control.Feedback>
                     <p className="mb-3"></p>
                     <Form.Control type="password" name="password" value={values.password} placeholder="Password" onChange={handleChange} 
-                        isInvalid={touched.password && !!errors.password} isValid={touched.password && !errors.password} />
+                        isInvalid={touched.password && !!errors.password} />
                     <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
-                    <p className="mb-4"></p>
+                    <p className="mb-4 text-danger">{errors.all}</p>
                     <Button className="w-100" type="submit" variant="dark">Zaloguj się</Button>
                 </Form>
 
