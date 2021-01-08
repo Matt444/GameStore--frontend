@@ -29,12 +29,24 @@ export const Admin_categories = (props) => {
                         <Form.Control type="text" placeholder="Nazwa" onChange={e => setCategory(e.target.value)}/>
                     </Col>
                     <Col lg={2} className="mb-2">
-                        <Button className="w-100" type="submit" variant="dark" onClick={async () => {
-                            var requestOptions = {
-                                method: 'POST'
-                            };
-                            fetch("/addcategory?name=" + category, requestOptions)
+                        <Button className="w-100" type="submit" variant="dark" onClick={ (e) => {
+                            e.preventDefault();
 
+                            var myHeaders = new Headers();
+                            myHeaders.append("Content-Type", "application/json");
+                            myHeaders.append("Authorization", "Bearer " + props.token);
+                            var raw = JSON.stringify({"name": category});
+
+                            fetch("/addcategory", {
+                                method: 'POST',
+                                body: raw,
+                                headers: myHeaders
+                            })
+                                .then(res => res.json())
+                                .then(data => {
+                                    console.log(data);
+                                });
+                            window.location.reload()
                         }}>Dodaj</Button>
                     </Col>
                 </Row>
@@ -56,11 +68,20 @@ export const Admin_categories = (props) => {
                     <tr>
                         <td>{category.name.charAt(0).toUpperCase() + category.name.slice(1)}</td>
                         <td style={{width: "60px"}}>
-                            <Button className="icon p-0" variant="link" onClick={async () => {
+                            <Button className="icon p-0" variant="link" onClick={ (e) => {
+                                e.preventDefault();
+
+                                var myHeaders = new Headers();
+                                myHeaders.append("Content-Type", "application/json");
+                                myHeaders.append("Authorization", "Bearer " + props.token);
+                                var raw = JSON.stringify({"name": category.name});
+
                                 var requestOptions = {
-                                    method: 'POST'
+                                    method: 'POST',
+                                    headers: myHeaders,
+                                    body: raw
                                 };
-                                fetch("/delcategory?name=" + category.name, requestOptions)
+                                fetch("/delcategory", requestOptions);
                                 window.location.reload()
                             }}><XCircle className="text-black-50" size={20}/>
                             </Button>
