@@ -6,27 +6,28 @@ import min from './min.jpg';
 import './Home.css';
 
 const Category = (props) => (   
-    <Form.Check className="fbbt mt-1" type="checkbox" id={props.category} label={props.category} />
+    <Form.Check className="fbbt mt-1" type="checkbox" id={props.category} label={props.category} onClick={() => props.handleCategorySelect(props.id)}/>
 );
 
 const Platform = (props) => (
-    <Form.Check className="fbbt mt-1" type="checkbox" id={props.platform} label={props.platform} />
+    <Form.Check className="fbbt mt-1" type="checkbox" id={props.platform} label={props.platform} onClick={() => props.handlePlatformSelect(props.id)}/>
 );
 
 const SideBar = (props) => (
     <Form>
         <p className="fltr mb-0">Kategorie</p>
-        {props.categories.map((cat) => <Category key={cat.id} category={cat.name.charAt(0).toUpperCase() + cat.name.slice(1)} /> ) }
+        {props.categories.map((cat) => <Category key={cat.id} id={cat.id} category={cat.name.charAt(0).toUpperCase() + cat.name.slice(1)} 
+                                            handleCategorySelect={props.handleCategorySelect}/> ) }
 
         <p className="fltr mb-0 mt-1">Platformy</p>
-        {props.platforms.map((plat) => <Platform key={plat.id} platform={plat.name.toUpperCase()} /> ) }
+        {props.platforms.map((plat) => <Platform key={plat.id} id={plat.id} platform={plat.name.toUpperCase()} 
+                                            handlePlatformSelect={props.handlePlatformSelect}/> ) }
 
         <p className="fltr mb-0 mt-1">Wiek</p>
-            <Form.Check className="fbbt mt-1" type="checkbox" id="7" label="7" />
-            <Form.Check className="fbbt mt-1" type="checkbox" id="14" label="14" />
-            <Form.Check className="fbbt mt-1" type="checkbox" id="18" label="18" />
+        <Form.Check className="fbbt mt-1" type="checkbox" id="7" label="7" />
+        <Form.Check className="fbbt mt-1" type="checkbox" id="14" label="14" />
+        <Form.Check className="fbbt mt-1" type="checkbox" id="18" label="18" />
 
-        <Button type="submit" className="mt-4">Zastosuj filtry</Button>
     </Form>
 );
 
@@ -54,10 +55,108 @@ const CustomCard = (props) => (
     </Col>
 );
 
+const CustomPagination = (props) => {
+    const neighbors = 1;
+    const totalPages = props.totalPages;
+    const currPage = props.currPage;
+    let pages = [];
+    for(let i = currPage - neighbors;i < currPage;i++)
+        if(i > 0)
+            pages.push(i);
+    for(let i = currPage;i <= currPage + neighbors;i++)
+        if(i <= totalPages)
+            pages.push(i);
+    const prevPage = currPage - 1 > 0 ? currPage - 1 : 0;
+    const nextPage = currPage + 1 <= totalPages ? (currPage + 1) : 0;
+    console.log(pages);
+
+    return (
+        <Col xl={12} className="mt-3 d-flex justify-content-center">
+            <Pagination >
+                {prevPage == 0 ? <Pagination.Prev disabled /> : <Pagination.Prev onClick={() => props.handlePageChange(prevPage)}/>}
+                {pages.map(p => {
+                    if(p == currPage)
+                        return <Pagination.Item active>{p}</Pagination.Item>
+                    else
+                        return <Pagination.Item onClick={() => props.handlePageChange(p)}>{p}</Pagination.Item>
+                })}
+                {nextPage == 0 ? <Pagination.Next disabled /> : <Pagination.Next onClick={() => props.handlePageChange(nextPage)}/>}
+            </Pagination>
+        </Col>
+    );
+}
 
 export const  Home = () => {
     const [categories, setCategories] = useState([]);
     const [platforms, setPlatforms] = useState([]);
+    const [games, setGames] = useState([]);
+    const [totalPages, setTotalPages] = useState(1);
+    const [currPage, setCurrPage] = useState(1);
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+
+    const updateGamesList =(nr) => {
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1OTE2ODc4OTksIm5iZiI6MTU5MTY4Nzg5OSwianRpIjoiNmJmOWE0ZWYtZjdmYy00NDIxLWE2MzYtZDhhZTU5MWJiZGJkIiwiZXhwIjoxNTkxNjg4Nzk5LCJpZGVudGl0eSI6MSwiZnJlc2giOnRydWUsInR5cGUiOiJhY2Nlc3MifQ.77d6fUbdGhkGb4uDTICrqyMiAar_qE1NwalqY8NDbCg");
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({"search_filter":{
+            "page_number": nr, 
+            "categories_id": selectedCategories,
+            "platforms_id": selectedPlatforms
+        }});
+
+        var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+        };
+
+        fetch("/games", requestOptions)
+        .then(res => res.json())
+        .then(data => {
+            setGames(data.games);
+            setTotalPages(Math.ceil(data.total_number / data.results_per_page));
+        })
+        .catch(err => console.log(err));
+    }
+
+    const handlePageChange = (nr) => {
+        console.log(nr);
+        setCurrPage(nr);
+        updateGamesList(nr);
+    };
+
+    const handleCategorySelect = (id) => {
+        const index = selectedCategories.indexOf(id);
+        console.log(index);
+        if(index != -1) {
+            selectedCategories.splice(index,1)
+            setSelectedCategories(selectedCategories)
+        } else {
+            selectedCategories.push(id)
+            setSelectedCategories(selectedCategories);
+        }
+        
+        setCurrPage(1);
+        updateGamesList(1);
+    }
+
+    const handlePlatformSelect = (id) => {
+        const index = selectedPlatforms.indexOf(id);
+        console.log(index);
+        if(index != -1) {
+            selectedPlatforms.splice(index,1)
+            setSelectedPlatforms(selectedPlatforms)
+        } else {
+            selectedPlatforms.push(id)
+            setSelectedPlatforms(selectedPlatforms);
+        }
+        
+        setCurrPage(1);
+        updateGamesList(1);
+    }
 
     useEffect(() => {
         fetch("/categories")
@@ -69,7 +168,11 @@ export const  Home = () => {
         .then(res => res.json())
         .then(data => setPlatforms(data.platforms))
         .catch(err => console.log(err));
+
+        updateGamesList(1);
+
     }, []);
+
         
     return (
         <div>
@@ -88,33 +191,25 @@ export const  Home = () => {
                             </Button>
                         
                     </Form>
-                    
-                    
-                    
+   
                 </Col>
             </Row>
 
             <Row>
                 <Col sm={3}>
                     
-                    <SideBar categories={categories} platforms={platforms} />
+                    <SideBar categories={categories} platforms={platforms} 
+                        handleCategorySelect={handleCategorySelect} handlePlatformSelect={handlePlatformSelect} />
 
                 </Col>
                 <Col sm={9}>
 
                     <Row>
-                        <CustomCard title="Cyberpunk 2077" price="120 zł" platform="XBOX" form="KEY" />
+                        {games.map((g) => { 
+                            return <CustomCard key={g.id} title={g.name} price={g.price} platform="XBOX" form={g.is_digital ? "KEY": "BOX"} /> 
+                        })}
 
-                            
-                        <Col xl={12} className="mt-3 d-flex justify-content-center">
-                            <Pagination >
-                                <Pagination.Prev disabled />
-                                <Pagination.Item active>{1}</Pagination.Item>
-                                <Pagination.Item>{2}</Pagination.Item>
-                                <Pagination.Item>{3}</Pagination.Item>
-                                <Pagination.Next />
-                            </Pagination>
-                        </Col>
+                        <CustomPagination currPage={currPage} totalPages={totalPages} handlePageChange={handlePageChange} />
 
                     </Row>
 
