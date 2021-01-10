@@ -68,7 +68,6 @@ const CustomPagination = (props) => {
             pages.push(i);
     const prevPage = currPage - 1 > 0 ? currPage - 1 : 0;
     const nextPage = currPage + 1 <= totalPages ? (currPage + 1) : 0;
-    console.log(pages);
 
     return (
         <Col xl={12} className="mt-3 d-flex justify-content-center">
@@ -94,8 +93,9 @@ export const  Home = () => {
     const [currPage, setCurrPage] = useState(1);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+    const [search, setSearch] = useState('');
 
-    const updateGamesList =(nr) => {
+    const updateGamesList =(nr, name='') => {
         var myHeaders = new Headers();
         myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1OTE2ODc4OTksIm5iZiI6MTU5MTY4Nzg5OSwianRpIjoiNmJmOWE0ZWYtZjdmYy00NDIxLWE2MzYtZDhhZTU5MWJiZGJkIiwiZXhwIjoxNTkxNjg4Nzk5LCJpZGVudGl0eSI6MSwiZnJlc2giOnRydWUsInR5cGUiOiJhY2Nlc3MifQ.77d6fUbdGhkGb4uDTICrqyMiAar_qE1NwalqY8NDbCg");
         myHeaders.append("Content-Type", "application/json");
@@ -103,7 +103,8 @@ export const  Home = () => {
         var raw = JSON.stringify({"search_filter":{
             "page_number": nr, 
             "categories_id": selectedCategories,
-            "platforms_id": selectedPlatforms
+            "platforms_id": selectedPlatforms,
+            "name": name
         }});
 
         var requestOptions = {
@@ -183,10 +184,13 @@ export const  Home = () => {
                 
                 <Col sm={3}></Col>
                 <Col sm={9} style={{ position: "relative" }}>
-                    <Form>
+                    <Form onSubmit={(e) => { 
+                        e.preventDefault();
+                        updateGamesList(1, document.getElementById("gameInput").value)
+                         }}>
                         
                             <Form.Control id="gameInput" type="text" placeholder="Wyszukaj grę..." />
-                            <Button className="icon" variant="Link" type="submit">
+                            <Button className="icon" variant="Link" type="submit" >
                                 <Search className="text-black-50" Size={24} style={{ position: "absolute", top: "12px", right: "30px" }} />
                             </Button>
                         
