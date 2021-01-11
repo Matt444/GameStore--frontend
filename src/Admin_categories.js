@@ -35,17 +35,15 @@ export const Admin_categories = (props) => {
                             var myHeaders = new Headers();
                             myHeaders.append("Content-Type", "application/json");
                             myHeaders.append("Authorization", "Bearer " + props.token);
-                            var raw = JSON.stringify({"name": category});
 
-                            fetch("/addcategory", {
-                                method: 'POST',
-                                body: raw,
+                            fetch("/addcategory/" + category, {
+                                method: 'PUT',
                                 headers: myHeaders
                             })
                                 .then(res => res.json())
                                 .then(data => {
                                     console.log(data);
-                                }).then(() => categories.push(category));
+                                }).then(() => window.location.reload());
                         }}>Dodaj</Button>
                     </Col>
                 </Row>
@@ -73,14 +71,12 @@ export const Admin_categories = (props) => {
                                 var myHeaders = new Headers();
                                 myHeaders.append("Content-Type", "application/json");
                                 myHeaders.append("Authorization", "Bearer " + props.token);
-                                var raw = JSON.stringify({"name": category.name});
 
                                 var requestOptions = {
-                                    method: 'POST',
-                                    headers: myHeaders,
-                                    body: raw
+                                    method: 'DELETE',
+                                    headers: myHeaders
                                 };
-                                await fetch("/delcategory", requestOptions)
+                                await fetch("/deletecategory/" + category.name, requestOptions)
                                     .then(() => window.location.reload());
                             }}><XCircle className="text-black-50" size={20}/>
                             </Button>
