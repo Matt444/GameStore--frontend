@@ -43,7 +43,14 @@ export const Admin_categories = (props) => {
                                 .then(res => res.json())
                                 .then(data => {
                                     console.log(data);
-                                }).then(() => window.location.reload());
+                                })
+                                .then(() => {
+                                    fetch("/categories").then(response =>
+                                        response.json().then(data => {
+                                            setCategories(data.categories);
+                                        })
+                                    );
+                                });
                         }}>Dodaj</Button>
                     </Col>
                 </Row>
@@ -77,7 +84,13 @@ export const Admin_categories = (props) => {
                                     headers: myHeaders
                                 };
                                 await fetch("/deletecategory/" + category.name, requestOptions)
-                                    .then(() => window.location.reload());
+                                    .then(() => {
+                                        fetch("/categories").then(response =>
+                                            response.json().then(data => {
+                                                setCategories(data.categories);
+                                            })
+                                        );
+                                    });
                             }}><XCircle className="text-black-50" size={20}/>
                             </Button>
                         </td>

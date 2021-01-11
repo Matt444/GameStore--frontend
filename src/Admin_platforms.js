@@ -38,7 +38,13 @@ export const Admin_platforms = (props) => {
                                 headers: myHeaders
                             };
                             await fetch("/addplatform/" + platform, requestOptions)
-                                .then(() => window.location.reload());
+                                .then(() => {
+                                    fetch("/platforms").then(response =>
+                                        response.json().then(data => {
+                                            setPlatforms(data.platforms);
+                                        })
+                                    );
+                                });
                         }}>Dodaj</Button>
                     </Col>
                 </Row>
@@ -71,7 +77,13 @@ export const Admin_platforms = (props) => {
                                     headers: myHeaders
                                 };
                                 await fetch("/deleteplatform/" + platform.name, requestOptions)
-                                    .then(() => window.location.reload());
+                                    .then(() => {
+                                        fetch("/platforms").then(response =>
+                                            response.json().then(data => {
+                                                setPlatforms(data.platforms);
+                                            })
+                                        );
+                                    });
                             }}/> </Button>
                         </td>
                     </tr>)}
