@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Form, Button, Image, Card, Pagination } from 'react-bootstrap';
-import { Search, CartPlus } from 'react-bootstrap-icons';
+import { Search, CartPlus, CartCheck } from 'react-bootstrap-icons';
 import bkg from './home.jpg';
 import min from './min.jpg';
+import useCart from './components/useCart';
 import './Home.css';
 
 const Category = (props) => (   
@@ -31,31 +32,40 @@ const SideBar = (props) => (
     </Form>
 );
 
-const CustomCard = (props) => (
-    <Col xs={12} md={6} lg={4} className="mt-3">
-        <Card>
-            <a href="#">
-                <Card.Img variant="top" src={ min } />
-            </a>
-            
-            <Card.Body className="p-2">
+const GameCard = (props) => {
+    const { addGame, gameIndex } = useCart();
+    const [inCart, setInCart] = useState(gameIndex(props.id) === -1 ? false : true);
+    
+
+    return (
+        <Col xs={12} md={6} lg={4} className="mt-3">
+            <Card>
                 <a href="#">
-                    <Card.Title style={{ height: "40px" }} className="fbbt mb-0 pb-0">{props.title}</Card.Title>
+                    <Card.Img variant="top" src={ min } />
                 </a>
                 
-                <div className="d-flex justify-content-between align-items-center mt-0 pt-0">
-                    <span className="fbbt text-black-50">{props.price}</span>
-                    <div className="d-flex align-items-center mt-1">
-                            <span className="fbs text-black-50">{props.platform} | {props.form}</span>
-                        <Button className="p-0 ml-2 mb-1 icon" variant="Link"><CartPlus className="p-0 text-secondary" size={24} /></Button>
+                <Card.Body className="p-2">
+                    <a href="#">
+                        <Card.Title style={{ height: "40px" }} className="fbbt mb-0 pb-0">{props.title}</Card.Title>
+                    </a>
+                    
+                    <div className="d-flex justify-content-between align-items-center mt-0 pt-0">
+                        <span className="fbbt text-black-50">{props.price}</span>
+                        <div className="d-flex align-items-center mt-1">
+                                <span className="fbs text-black-50">{props.platform} | {props.form}</span>
+                            <Button className="p-0 ml-2 mb-1 icon" onClick={() => { if(!inCart) { addGame(props.id); setInCart(true); }}} variant="Link">
+                                {inCart ? <CartCheck className="p-0 text-secondary" size={24} /> :
+                                <CartPlus className="p-0 text-secondary" size={24} />
+                            } </Button>
+                        </div>
                     </div>
-                </div>
-            </Card.Body>
-        </Card>
-    </Col>
-);
+                </Card.Body>
+            </Card>
+        </Col>
+    );
+}
 
-const CustomPagination = (props) => {
+const GamesPagination = (props) => {
     const neighbors = 1;
     const totalPages = props.totalPages;
     const currPage = props.currPage;
@@ -72,14 +82,14 @@ const CustomPagination = (props) => {
     return (
         <Col xl={12} className="mt-3 d-flex justify-content-center">
             <Pagination >
-                {prevPage == 0 ? <Pagination.Prev disabled /> : <Pagination.Prev onClick={() => props.handlePageChange(prevPage)}/>}
+                {prevPage == 0 ? <Pagination.Prev key={-1} disabled /> : <Pagination.Prev key={-1} onClick={() => props.handlePageChange(prevPage)}/>}
                 {pages.map(p => {
                     if(p == currPage)
-                        return <Pagination.Item active>{p}</Pagination.Item>
+                        return <Pagination.Item key={p} active>{p}</Pagination.Item>
                     else
-                        return <Pagination.Item onClick={() => props.handlePageChange(p)}>{p}</Pagination.Item>
+                        return <Pagination.Item key={p} onClick={() => props.handlePageChange(p)}>{p}</Pagination.Item>
                 })}
-                {nextPage == 0 ? <Pagination.Next disabled /> : <Pagination.Next onClick={() => props.handlePageChange(nextPage)}/>}
+                {nextPage == 0 ? <Pagination.Next key={-2} disabled /> : <Pagination.Next key={-2} onClick={() => props.handlePageChange(nextPage)}/>}
             </Pagination>
         </Col>
     );
@@ -93,11 +103,10 @@ export const  Home = () => {
     const [currPage, setCurrPage] = useState(1);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
-    const [search, setSearch] = useState('');
+    
 
     const updateGamesList =(nr, name='') => {
         var myHeaders = new Headers();
-        myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1OTE2ODc4OTksIm5iZiI6MTU5MTY4Nzg5OSwianRpIjoiNmJmOWE0ZWYtZjdmYy00NDIxLWE2MzYtZDhhZTU5MWJiZGJkIiwiZXhwIjoxNTkxNjg4Nzk5LCJpZGVudGl0eSI6MSwiZnJlc2giOnRydWUsInR5cGUiOiJhY2Nlc3MifQ.77d6fUbdGhkGb4uDTICrqyMiAar_qE1NwalqY8NDbCg");
         myHeaders.append("Content-Type", "application/json");
 
         var raw = JSON.stringify({"search_filter":{
@@ -210,10 +219,11 @@ export const  Home = () => {
 
                     <Row>
                         {games.map((g) => { 
-                            return <CustomCard key={g.id} title={g.name} price={g.price} platform="XBOX" form={g.is_digital ? "KEY": "BOX"} /> 
+                            return <GameCard key={g.id} id={g.id} title={g.name} 
+                                price={g.price} platform="XBOX" form={g.is_digital ? "KEY": "BOX"} /> 
                         })}
 
-                        <CustomPagination currPage={currPage} totalPages={totalPages} handlePageChange={handlePageChange} />
+                        <GamesPagination currPage={currPage} totalPages={totalPages} handlePageChange={handlePageChange} />
 
                     </Row>
 
