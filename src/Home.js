@@ -33,7 +33,7 @@ const SideBar = (props) => (
 );
 
 const GameCard = (props) => {
-    const { addGame, gameIndex } = useCart();
+    const { addGame, setGame, gameIndex } = useCart();
     const [inCart, setInCart] = useState(gameIndex(props.id) === -1 ? false : true);
     
 
@@ -50,10 +50,17 @@ const GameCard = (props) => {
                     </a>
                     
                     <div className="d-flex justify-content-between align-items-center mt-0 pt-0">
-                        <span className="fbbt text-black-50">{props.price}</span>
+                        <span className="fbbt text-black-50">{props.price} zł</span>
                         <div className="d-flex align-items-center mt-1">
                                 <span className="fbs text-black-50">{props.platform} | {props.form}</span>
-                            <Button className="p-0 ml-2 mb-1 icon" onClick={() => { if(!inCart) { addGame(props.id); setInCart(true); }}} variant="Link">
+                            <Button className="p-0 ml-2 mb-1 icon" onClick={() => { if(!inCart) { 
+                                    addGame(props.id);
+                                    setInCart(true); 
+                                } else {
+                                    setGame(props.id,0);
+                                    setInCart(false);
+                                }
+                            }} variant="Link">
                                 {inCart ? <CartCheck className="p-0 text-secondary" size={24} /> :
                                 <CartPlus className="p-0 text-secondary" size={24} />
                             } </Button>
@@ -82,14 +89,14 @@ const GamesPagination = (props) => {
     return (
         <Col xl={12} className="mt-3 d-flex justify-content-center">
             <Pagination >
-                {prevPage == 0 ? <Pagination.Prev key={-1} disabled /> : <Pagination.Prev key={-1} onClick={() => props.handlePageChange(prevPage)}/>}
+                {prevPage === 0 ? <Pagination.Prev key={-1} disabled /> : <Pagination.Prev key={-1} onClick={() => props.handlePageChange(prevPage)}/>}
                 {pages.map(p => {
-                    if(p == currPage)
+                    if(p === currPage)
                         return <Pagination.Item key={p} active>{p}</Pagination.Item>
                     else
                         return <Pagination.Item key={p} onClick={() => props.handlePageChange(p)}>{p}</Pagination.Item>
                 })}
-                {nextPage == 0 ? <Pagination.Next key={-2} disabled /> : <Pagination.Next key={-2} onClick={() => props.handlePageChange(nextPage)}/>}
+                {nextPage === 0 ? <Pagination.Next key={-2} disabled /> : <Pagination.Next key={-2} onClick={() => props.handlePageChange(nextPage)}/>}
             </Pagination>
         </Col>
     );
@@ -141,7 +148,7 @@ export const  Home = () => {
     const handleCategorySelect = (id) => {
         const index = selectedCategories.indexOf(id);
         console.log(index);
-        if(index != -1) {
+        if(index !== -1) {
             selectedCategories.splice(index,1)
             setSelectedCategories(selectedCategories)
         } else {
@@ -156,7 +163,7 @@ export const  Home = () => {
     const handlePlatformSelect = (id) => {
         const index = selectedPlatforms.indexOf(id);
         console.log(index);
-        if(index != -1) {
+        if(index !== -1) {
             selectedPlatforms.splice(index,1)
             setSelectedPlatforms(selectedPlatforms)
         } else {

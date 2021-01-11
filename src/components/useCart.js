@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 export default function useCart() {
   const getCart = () => {
     const CartString = localStorage.getItem('cart');
@@ -5,8 +7,11 @@ export default function useCart() {
     return userCart;
   };
 
+  const [cart, setCart] = useState(getCart());
+
   const saveCart = userCart => {
     localStorage.setItem('cart', JSON.stringify(userCart));
+    setCart(userCart);
   };
 
   const addGame = (id) => {
@@ -26,7 +31,7 @@ const delGame = (id) => {
     if(index === -1 ) return;
     cart[index].quantity -= 1;
     if(cart[index].quantity === 0)
-        cart.splice(index,1);
+      cart.splice(index,1);
     saveCart(cart);
 }
 
@@ -35,6 +40,8 @@ const setGame = (id, q) => {
     let index = gameIndex(id);
     if(index === -1 ) return;
     cart[index].quantity = q;
+    if(cart[index].quantity === 0)
+      cart.splice(index,1);
     saveCart(cart);
 }
 
@@ -50,6 +57,7 @@ const gameIndex = (id) => {
     addGame: addGame,
     delGame: delGame,
     gameIndex: gameIndex,
-    setGame: setGame
+    setGame: setGame,
+    cart
   }
 }

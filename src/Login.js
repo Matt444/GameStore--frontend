@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, Button } from 'react-bootstrap';
 import { Formik } from 'formik';
@@ -22,7 +22,7 @@ export const Login = ({ setToken, setRole }) => {
                     password: ''
                 }}
                 onSubmit={(values, errors) => {     
-                    fetch('http://127.0.0.1:5000/auth', {
+                    fetch('/auth', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -41,7 +41,7 @@ export const Login = ({ setToken, setRole }) => {
                         console.log(data)
                         console.log(data.access_token);
                         const token = data.access_token;
-                        const role = data.role;
+                        const role = data.user.role;
                         setToken(token);
                         setRole(role);
                         window.location.replace("/");

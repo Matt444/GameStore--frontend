@@ -12,7 +12,7 @@ function isActiveNav(addr, classes) {
 
 export const NavigationBar = (props) => {
     let navit;
-    if(props.token && props.role == 'admin') {
+    if(props.token && props.role === 'admin') {
         navit = <Nav.Link className={isActiveNav('admin','')} href="/admin/orders">Admin</Nav.Link>;
     } else if(props.token) {
         navit = <Nav.Link className={isActiveNav('myaccount','')} href="/myaccount/orders">My account</Nav.Link>;

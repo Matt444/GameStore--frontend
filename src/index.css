@@ -40,8 +40,6 @@ code {
 
 
 /* hover effects on icons */
-
-
 .icon:hover svg {
   fill: black;
 }
@@ -101,4 +99,8 @@ code {
 
 .active {
   color: black !important;
+}
+
+.layout {
+  min-height: calc(100vh - 106px);
 }

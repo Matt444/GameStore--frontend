@@ -16,6 +16,7 @@ import { Game } from './Game';
 import { NoMatch } from './NoMatch';
 import { Layout } from './components/Layout';
 import { NavigationBar } from './components/NavigationBar';
+import { Footer } from './components/Footer';
 import { Register } from './Register';
 import useToken from './components/useToken';
 import useRole from './components/useRole';
@@ -64,8 +65,9 @@ function App() {
             <Route component={NoMatch} />
           </Switch>
         </Router>
+        
       </Layout>
-
+      <Footer />
     </React.Fragment>
   );
 }
