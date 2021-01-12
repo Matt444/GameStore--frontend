@@ -13,7 +13,7 @@ export const Admin_keys = (props) => {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
     const name='';
-    const nr = 1;
+    const nr = 2;
     useEffect(() => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -89,12 +89,9 @@ export const Admin_keys = (props) => {
                         }}>Dodaj</Button>
                     </Col>
                 </Row>
-                
             </Form>
 
             <p className="fltr">Wszystkie klucze</p>
-            {games.map(game =>
-                <p className="fbbt mb-1">{game.name}</p>)}
             <p className="fbbt mb-1">#1 - Wiedźmin 3</p>
 
             <Table responsive>

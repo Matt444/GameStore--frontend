@@ -4,8 +4,8 @@ import { Table } from 'react-bootstrap';
 const TableRow = (props) => {
     return (
         <tr>
-            <td>{ props.game.name }</td>
-            <td>{ props.game.price }</td>
+            <td>{ props.game_name }</td>
+            <td>{ props.price }</td>
         </tr>
     )   
 }
@@ -20,7 +20,7 @@ export const TableGames = (props) => {
                 </tr>
             </thead>
             <tbody>
-                { props.games.map((game) => <TableRow game={game} /> ) }
+                { props.games_transactions.map((game) => <TableRow game={game} /> ) }
             </tbody>
         </Table>
     );

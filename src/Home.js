@@ -78,7 +78,7 @@ const GameCard = (props) => {
     );
 }
 
-const GamesPagination = (props) => {
+export const GamesPagination = (props) => {
     const neighbors = 1;
     const totalPages = props.totalPages;
     const currPage = props.currPage;
@@ -116,7 +116,7 @@ export const  Home = () => {
     const [currPage, setCurrPage] = useState(1);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
-    
+
 
     const updateGamesList =(nr, name='') => {
         var myHeaders = new Headers();
