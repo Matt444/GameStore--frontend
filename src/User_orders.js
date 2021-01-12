@@ -21,24 +21,24 @@ export const User_orders = (props) => {
     if (orders) {
         listToRender = orders.map(order => {
             return(
-                    <div>
-                        <p className="fltr">#{ order.id } - { order.date }</p>
-                        <Table responsive>
-                            <thead>
-                            <tr>
-                                <th className="no-border-top">Gra</th>
-                                <th className="no-border-top">Cena</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            { order.games_transactions.map((game) => <tr>
-                                <td>{ game.game_name }</td>
-                                <td>{ game.price }</td>
-                            </tr> ) }
-                            </tbody>
-                        </Table>
-                    </div>
-                )
+                <div>
+                    <p className="fltr">#{ order.id } - { order.date }</p>
+                    <Table responsive>
+                        <thead>
+                        <tr>
+                            <th className="no-border-top">Gra</th>
+                            <th className="no-border-top">Cena</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        { order.games_transactions.map((game) => <tr>
+                            <td>{ game.game_name }</td>
+                            <td>{ game.price }</td>
+                        </tr> ) }
+                        </tbody>
+                    </Table>
+                </div>
+            )
         })
     }
     if(!props.token)
