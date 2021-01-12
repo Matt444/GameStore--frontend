@@ -35,7 +35,7 @@ function App() {
             <Route path="/Cart" >
               <Cart token={token} />
             </Route>
-            <Route path='/Game' component={Game} />
+            <Route path='/Game/:id' component={Game} />
             <Route path="/Register" component={Register}/>
             <Route path='/Login' >
               <Login setToken={setToken} setRole={setRole} />

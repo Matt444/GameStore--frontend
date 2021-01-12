@@ -17,7 +17,7 @@ export const LayoutMyAccount = (props, isActive) => {
                 <Col sm={3}>
                     <p className="mb-2"><a className={isActiveSideNav('/myaccount/orders')} href="/myaccount/orders">Moje zamówienia</a></p>
                     <p className="mb-2"><a className={isActiveSideNav('/myaccount/edit')} href="/myaccount/edit" >Edytuj konto</a></p>
-                    <p className="mb-2"><a className="fltr text-black-50" href="/" onClick={ () => localStorage.clear() }>Wyloguj się</a></p>
+                    <p className="mb-2"><a className="fltr text-black-50" href="/" onClick={ () => localStorage.removeItem('token') }>Wyloguj się</a></p>
                     
                 </Col>
 

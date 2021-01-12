@@ -21,7 +21,7 @@ export const LayoutAdmin = (props) => {
                     <p className="mb-2"><a className={isActiveSideNav('/admin/categories')} href="/admin/categories">Kategorie</a></p>
                     <p className="mb-2"><a className={isActiveSideNav('/admin/platforms')} href="/admin/platforms">Platformy</a></p>
                     <p className="mb-2"><a className={isActiveSideNav('/admin/keys')} href="/admin/keys">Klucze</a></p>
-                    <p className="mb-2"><a href="/" className="fltr text-black-50" onClick={ () => localStorage.clear() }>Wyloguj się</a></p>
+                    <p className="mb-2"><a href="/" className="fltr text-black-50" onClick={ () => localStorage.removeItem('token') }>Wyloguj się</a></p>
                     
                 </Col>
 

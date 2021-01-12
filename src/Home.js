@@ -45,7 +45,7 @@ const GameCard = (props) => {
                 </a>
                 
                 <Card.Body className="p-2">
-                    <a href="#">
+                    <a href={"/game/" + props.id}>
                         <Card.Title style={{ height: "40px" }} className="fbbt mb-0 pb-0">{props.title}</Card.Title>
                     </a>
                     

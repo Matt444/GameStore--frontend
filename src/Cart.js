@@ -71,19 +71,24 @@ export const Cart = (props) => {
 
     if(cart === null || cart === undefined || cart.length === 0) {
         return (
-            <main className="mt-5">
+            <div>
                 {alerts.map((alert) => <Alert key={alert.message} variant={alert.variant} 
-                    onClose={() => delAlert(alert.message)} dismissible>{alert.message}</Alert> )}
-                <h1 className='font-weight-bold mb-2'>Koszyk jest pusty</h1>
-                <Button href="/" className="p-0 mb-1" variant="link">Back to home</Button>
-            </main>
+                onClose={() => delAlert(alert.message)} dismissible>{alert.message}</Alert> )}
+                <main className={alerts.length === 0 ? 'mt-5' : ''}>
+                
+                    <h1 className='font-weight-bold mb-2'>Koszyk jest pusty</h1>
+                    <Button href="/" className="p-0 mb-1" variant="link">Back to home</Button>
+                </main>
+            </div>
         );
     } else return (
         <div>
+        {alerts.map((alert) => <Alert key={alert.message} variant={alert.variant}
+            onClose={() => delAlert(alert.message)} dismissible>{alert.message}</Alert> )}
         
-        <main className="pt-5">
-            {alerts.map((alert) => <Alert key={alert.message} variant={alert.variant} 
-                onClose={() => delAlert(alert.message)} dismissible>{alert.message}</Alert> )}
+        <main className={alerts.length === 0 ? 'mt-5' : ''}>
+             
+                
             <h1 className='font-weight-bold mb-4'>Koszyk</h1>
             
             <Table responsive className="mb-3">
@@ -147,12 +152,16 @@ export const Cart = (props) => {
                             body: raw,
                             redirect: 'follow'
                         };
-                        const res = await fetch('/buy', requestOptions);
-                        if(res.ok) {
-                            clearCart();
-                            addAlert("success", "Pomyślnie zakupiono wybrane gry");
+                        if(props.token) {
+                            const res = await fetch('/buy', requestOptions);
+                            if(res.ok) {
+                                clearCart();
+                                addAlert("success", "Pomyślnie zakupiono wybrane gry");
+                            } else {
+                                addAlert("danger", "Wystąpił błąd");
+                            }
                         } else {
-                            addAlert("danger", "Wystąpił błąd");
+                            addAlert("warning", "Musisz być zalogowany aby wykonać zakupy");
                         }
 
                     }}>Kup teraz</Button>
