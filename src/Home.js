@@ -29,6 +29,10 @@ const SideBar = (props) => (
         <Form.Check className="fbbt mt-1" type="checkbox" id="14" label="14" />
         <Form.Check className="fbbt mt-1" type="checkbox" id="18" label="18" />
 
+        <p className="fltr mb-0 mt-1">Forma</p>
+        <Form.Check className="fbbt mt-1" type="checkbox" id="BOX" label="BOX" onClick={() => props.handleFormSelect("BOX")} />
+        <Form.Check className="fbbt mt-1" type="checkbox" id="KEY" label="KEY" onClick={() => props.handleFormSelect("KEY")} />
+
     </Form>
 );
 
@@ -116,20 +120,27 @@ export const  Home = () => {
     const [currPage, setCurrPage] = useState(1);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+    const [selectedAgeCategories, setSelectedAgeCategories] = useState([]);
+    const [selectedForms, setSelectedForms] = useState({box: false, key: false});
 
 
     const updateGamesList =(nr, name='') => {
-        var myHeaders = new Headers();
+        let myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        var raw = JSON.stringify({"search_filter":{
+        // digital -> -1 - all forms, 0 - box, 1 - digital
+        let digital = -1;
+        if(selectedForms.box === true && selectedForms.key === false) digital = 0;
+        if(selectedForms.box === false && selectedForms.key === true) digital = 1;
+        let raw = JSON.stringify({"search_filter":{
             "page_number": nr, 
             "categories_id": selectedCategories,
             "platforms_id": selectedPlatforms,
-            "name": name
+            "name": name,
+            "digital": digital
         }});
 
-        var requestOptions = {
+        let requestOptions = {
         method: 'POST',
         headers: myHeaders,
         body: raw,
@@ -181,6 +192,17 @@ export const  Home = () => {
         updateGamesList(1);
     }
 
+    const handleFormSelect = (id) => {
+        if(id === 'BOX')
+            selectedForms.box = !selectedForms.box;
+        if(id === 'KEY')
+            selectedForms.key = !selectedForms.key;
+        
+        setSelectedForms(selectedForms);
+        setCurrPage(1);
+        updateGamesList(1);
+    }
+
     useEffect(() => {
         fetch("/categories")
         .then(res => res.json())
@@ -225,7 +247,8 @@ export const  Home = () => {
                 <Col sm={3}>
                     
                     <SideBar categories={categories} platforms={platforms} 
-                        handleCategorySelect={handleCategorySelect} handlePlatformSelect={handlePlatformSelect} />
+                        handleCategorySelect={handleCategorySelect} handlePlatformSelect={handlePlatformSelect} 
+                        handleFormSelect={handleFormSelect}  />
 
                 </Col>
                 <Col sm={9}>
