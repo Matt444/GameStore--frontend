@@ -32,7 +32,9 @@ function App() {
         <Router>
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route path="/Cart" component={Cart} />
+            <Route path="/Cart" >
+              <Cart token={token} />
+            </Route>
             <Route path='/Game' component={Game} />
             <Route path="/Register" component={Register}/>
             <Route path='/Login' >

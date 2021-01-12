@@ -52,12 +52,17 @@ const gameIndex = (id) => {
     return cart.map((i) => i.game_id).indexOf(id);
 }
 
+const clearCart = () => {
+  saveCart([]);
+}
+
   return {
     getCart: getCart,
     addGame: addGame,
     delGame: delGame,
     gameIndex: gameIndex,
     setGame: setGame,
+    clearCart: clearCart,
     cart
   }
 }

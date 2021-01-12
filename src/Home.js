@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Form, Button, Image, Card, Pagination } from 'react-bootstrap';
-import { Search, CartPlus, CartCheck } from 'react-bootstrap-icons';
+import { Search, CartPlus, CartCheck, CartX } from 'react-bootstrap-icons';
 import bkg from './home.jpg';
 import min from './min.jpg';
 import useCart from './components/useCart';
@@ -41,7 +41,7 @@ const GameCard = (props) => {
         <Col xs={12} md={6} lg={4} className="mt-3">
             <Card>
                 <a href="#">
-                    <Card.Img variant="top" src={ min } />
+                    {/* <Card.Img variant="top" src={ min } /> */}
                 </a>
                 
                 <Card.Body className="p-2">
@@ -52,18 +52,24 @@ const GameCard = (props) => {
                     <div className="d-flex justify-content-between align-items-center mt-0 pt-0">
                         <span className="fbbt text-black-50">{props.price} zł</span>
                         <div className="d-flex align-items-center mt-1">
-                                <span className="fbs text-black-50">{props.platform} | {props.form}</span>
-                            <Button className="p-0 ml-2 mb-1 icon" onClick={() => { if(!inCart) { 
-                                    addGame(props.id);
-                                    setInCart(true); 
-                                } else {
-                                    setGame(props.id,0);
-                                    setInCart(false);
-                                }
-                            }} variant="Link">
-                                {inCart ? <CartCheck className="p-0 text-secondary" size={24} /> :
-                                <CartPlus className="p-0 text-secondary" size={24} />
-                            } </Button>
+                            <span className="fbs text-black-50">{props.platform} | {props.form}</span>
+                            { props.quantity > 0 ? 
+                                <Button className="p-0 ml-2 mb-1" onClick={() => { 
+                                    if(!inCart) { 
+                                        addGame(props.id);
+                                        setInCart(true); 
+                                    } else {
+                                        setGame(props.id,0);
+                                        setInCart(false);
+                                    }
+                                }} variant="Link">
+                                    { inCart ? <CartCheck className="p-0 text-secondary icon" size={24} /> :
+                                                <CartPlus className="p-0 text-secondary icon" size={24} /> } 
+                                </Button> :
+                                <Button className="p-0 ml-2 mb-1" variant="Link" disabled><CartX className="p-0 text-secondary" size={24} /></Button>
+                            }
+                            
+                            
                         </div>
                     </div>
                 </Card.Body>
@@ -226,8 +232,8 @@ export const  Home = () => {
 
                     <Row>
                         {games.map((g) => { 
-                            return <GameCard key={g.id} id={g.id} title={g.name} 
-                                price={g.price} platform="XBOX" form={g.is_digital ? "KEY": "BOX"} /> 
+                            return <GameCard key={g.id} id={g.id} title={g.name.charAt(0).toUpperCase() + g.name.slice(1)} 
+                                quantity={g.quantity} price={g.price} platform={g.platform.name.toUpperCase()} form={g.is_digital ? "KEY": "BOX"} /> 
                         })}
 
                         <GamesPagination currPage={currPage} totalPages={totalPages} handlePageChange={handlePageChange} />

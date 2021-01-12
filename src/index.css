@@ -40,6 +40,10 @@ code {
 
 
 /* hover effects on icons */
+.icon:hover {
+  fill: black;
+}
+
 .icon:hover svg {
   fill: black;
 }

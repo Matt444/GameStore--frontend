@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, ButtonGroup, Row, Col } from 'react-bootstrap';
+import { Table, Button, ButtonGroup, Row, Col, Alert } from 'react-bootstrap';
 import { XCircle } from 'react-bootstrap-icons';
 import useCart from './components/useCart';
+import useAlerts from './components/useAlerts';
 import './Cart.css';
 
 const GameRow = (props) => {
@@ -42,9 +43,11 @@ const SummaryRow = (props) => {
     )
 }
 
-export const Cart = () => {
-    const { cart, addGame, delGame, gameIndex, setGame} = useCart();
+export const Cart = (props) => {
+    const { cart, addGame, delGame, gameIndex, setGame, clearCart } = useCart();
+    const { alerts, addAlert, delAlert } = useAlerts([]);
     const [games, setGames] = useState([]);
+    
 
     const handleRemoveGames = (id) => {
         const index = games.map((i) => i.id).indexOf(id);
@@ -65,17 +68,24 @@ export const Cart = () => {
 
     }, [] );
 
+
     if(cart === null || cart === undefined || cart.length === 0) {
         return (
             <main className="mt-5">
+                {alerts.map((alert) => <Alert key={alert.message} variant={alert.variant} 
+                    onClose={() => delAlert(alert.message)} dismissible>{alert.message}</Alert> )}
                 <h1 className='font-weight-bold mb-2'>Koszyk jest pusty</h1>
                 <Button href="/" className="p-0 mb-1" variant="link">Back to home</Button>
             </main>
         );
     } else return (
-
-        <main className="mt-5">
+        <div>
+        
+        <main className="pt-5">
+            {alerts.map((alert) => <Alert key={alert.message} variant={alert.variant} 
+                onClose={() => delAlert(alert.message)} dismissible>{alert.message}</Alert> )}
             <h1 className='font-weight-bold mb-4'>Koszyk</h1>
+            
             <Table responsive className="mb-3">
                 <thead>
                     <tr className="no-border-top">
@@ -87,7 +97,7 @@ export const Cart = () => {
                     </tr>
                 </thead>
                 <tbody style={{ position: "relative" }}>
-                    {games.map((g) => <GameRow id={g.id} key={g.id} title={g.name} platform={g.platform.name} 
+                    {games.map((g) => <GameRow id={g.id} key={g.id} title={g.name.charAt(0).toUpperCase() + g.name.slice(1)} platform={g.platform.name.toUpperCase()} 
                         form={g.is_digital ? 'KEY' : 'BOX'} quantity={g.quantity} price={g.price} 
                         inCartQuantity={cart[gameIndex(g.id)].quantity} handleDelGame={delGame} handleAddGame={addGame} 
                         handleRemoveGames={handleRemoveGames}/>)}
@@ -109,7 +119,8 @@ export const Cart = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {games.map((g) => <SummaryRow id={g.id} key={g.id} name={g.name} platform={g.platform.name} form={g.is_digital ? 'KEY' : 'BOX'}
+                        {games.map((g) => <SummaryRow id={g.id} key={g.id} name={g.name.charAt(0).toUpperCase() + g.name.slice(1)} 
+                            platform={g.platform.name.toUpperCase()} form={g.is_digital ? 'KEY' : 'BOX'}
                             price={g.price} inCartQuantity={cart[gameIndex(g.id)].quantity}/>)}
 
                         <tr>
@@ -124,10 +135,31 @@ export const Cart = () => {
                         <tr><th colSpan="2"></th></tr>
                     </tbody>
                     </Table>
-                    <Button variant="dark" className="w-100">Kup teraz</Button>
+                    <Button variant="dark" className="w-100" onClick={async () => {
+                        let myHeaders = new Headers();
+                        myHeaders.append("Content-Type", "application/json");
+                        console.log('token', props.token);
+                        myHeaders.append("Authorization", "Bearer " + props.token);
+                        let raw = JSON.stringify({"shopping_cart": cart});
+                        let requestOptions = {
+                            method: 'POST',
+                            headers: myHeaders,
+                            body: raw,
+                            redirect: 'follow'
+                        };
+                        const res = await fetch('/buy', requestOptions);
+                        if(res.ok) {
+                            clearCart();
+                            addAlert("success", "Pomyślnie zakupiono wybrane gry");
+                        } else {
+                            addAlert("danger", "Wystąpił błąd");
+                        }
+
+                    }}>Kup teraz</Button>
                 </Col>
             </Row>
 
         </main>
+        </div>
     );
 }
