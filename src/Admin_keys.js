@@ -6,7 +6,7 @@ import { XCircle } from 'react-bootstrap-icons';
 
 export const Admin_keys = (props) => {
     const [game, setGame] = useState("default");
-    const [games, setGames] = useState(["ok"]);
+    const [games, setGames] = useState([]);
     const [key, setKey] = useState("");
     const [id, setId] = useState();
 
@@ -14,31 +14,39 @@ export const Admin_keys = (props) => {
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
     const name='';
     const nr = 2;
-    useEffect(() => {
+    useEffect(async () => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        var raw = JSON.stringify({"search_filter":{
-                "page_number": nr,
-                "categories_id": selectedCategories,
-                "platforms_id": selectedPlatforms,
-                "name": name
-            }});
+        var run = true;
+        var i = 1;
+        var results = [];
+        // Jak dodać warunek przerywający pętly po pobraniu mniej niż 12 gier?
+        // To samo w admin_games do wyświtlenia listy gier
+        while (i < 50){
+            var raw = JSON.stringify({"search_filter":{
+                    "page_number": i,
+                    "categories_id": selectedCategories,
+                    "platforms_id": selectedPlatforms,
+                    "name": name
+                }});
 
-        var requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow'
-        };
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
 
-        fetch("/games", requestOptions)
-            .then(res => res.json())
-            .then(data => {
-                setGames(data.games);
-            })
-            .catch(err => console.log(err));
+            var res = await fetch("/games", requestOptions)
+                .then(res => res.json());
+            results.push(res.games)
+            i++;
+
+        }
+        console.log(results)
     }, []);
+
 
     if(!props.token || props.role != 'admin')
         return <Forbidden />;
