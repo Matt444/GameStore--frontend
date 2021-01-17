@@ -4,8 +4,6 @@ import { TableGames } from './components/TableGames';
 import { LayoutMyAccount } from './components/LayoutMyAccount';
 import {Table} from "react-bootstrap";
 
-
-
 export const User_orders = (props) => {
     const [orders, setOrders] = useState();
     useEffect(() =>{
@@ -27,13 +25,13 @@ export const User_orders = (props) => {
                         <thead>
                         <tr>
                             <th className="no-border-top">Gra</th>
-                            <th className="no-border-top">Cena</th>
+                            <th className="no-border-top" style={{ width: "140px" }}>Cena</th>
                         </tr>
                         </thead>
                         <tbody>
                         { order.games_transactions.map((game) => <tr>
                             <td>{ game.game_name }</td>
-                            <td>{ game.price }</td>
+                            <td>{ game.price } zł</td>
                         </tr> ) }
                         </tbody>
                     </Table>
