@@ -2,49 +2,63 @@ import React, {useEffect, useState} from 'react';
 import { Forbidden } from './Forbidden';
 import { Table, Form, Button, Row, Col, DropdownButton, Dropdown } from 'react-bootstrap';
 import { LayoutAdmin } from './components/LayoutAdmin';
-import { XCircle } from 'react-bootstrap-icons';
+import { Formik } from 'formik';
+import * as yup from 'yup';
+
+const schema = yup.object({
+    game: yup.string().required('Choose game...'),
+    key: yup.string().required(),
+});
 
 export const Admin_keys = (props) => {
-    const [game, setGame] = useState("default");
+    const [game, setGame] = useState("Choose game...");
     const [games, setGames] = useState([]);
-    const [key, setKey] = useState("");
     const [id, setId] = useState();
+    const [keyAdded, setKeyAdded] = useState(false);
 
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [selectedPlatforms, setSelectedPlatforms] = useState([]);
-    const name='';
-    const nr = 2;
-    useEffect(async () => {
+    const updateGames = async () => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        var run = true;
-        var i = 1;
-        var results = [];
-        // Jak dodać warunek przerywający pętly po pobraniu mniej niż 12 gier?
-        // To samo w admin_games do wyświtlenia listy gier
-        while (i < 50){
-            var raw = JSON.stringify({"search_filter":{
-                    "page_number": i,
-                    "categories_id": selectedCategories,
-                    "platforms_id": selectedPlatforms,
-                    "name": name
-                }});
+        let i = 1;
+        let totalPages = 1;
+        let arr = [];
 
-            var requestOptions = {
+        while (i <= totalPages) {
+            const res = await fetch("/games", {
                 method: 'POST',
                 headers: myHeaders,
-                body: raw,
+                body: JSON.stringify({"search_filter":{
+                    "digital": 1,
+                    "page_number": i
+                }}),
                 redirect: 'follow'
-            };
-
-            var res = await fetch("/games", requestOptions)
-                .then(res => res.json());
-            results.push(res.games)
+            });
+            const data = await res.json();
+            totalPages = Math.ceil(data.total_number / data.results_per_page);
+            
+            arr = await arr.concat(data.games);
             i++;
-
         }
-        console.log(results)
+
+        myHeaders.append("Authorization", "Bearer " + props.token);
+        await Promise.all(arr.map(async(g, index) => {
+            const res = await fetch('/keys?game_id=' + g.id, {
+                headers: {
+                    'Authorization': 'Bearer ' + props.token
+                },
+            });
+            const data = await res.json();
+            arr[index].keys = data.keys ? data.keys : [];
+
+        }))
+
+        setGames(arr);
+    }
+
+    useEffect(async () => {
+        updateGames();
+        
     }, []);
 
 
@@ -54,108 +68,83 @@ export const Admin_keys = (props) => {
     return (
         <LayoutAdmin>
             <p className="fltr">Dodaj klucz</p>
-            <Form className="mb-2">
-                <Row>
-                    <Col lg={3} className="mb-2">
-                        <DropdownButton className="dropdown-fullw-light" id="dropdown-basic-button"
-                                        variant="outline-secondary" title={game} onChange={e => setGame(e.target.value)}>
-                            {games.map(game => {
-                                if (game.is_digital)
-                                    return <Dropdown.Item onClick={e => {
-                                        setGame(game.name);
-                                        setId(game.id);
-                                    }}>{game.name}</Dropdown.Item>
-                                }
-                            )
-                            }
-                        </DropdownButton>
-                    </Col>
-                    <Col lg={7} className="mb-2">
-                        <Form.Control type="text" placeholder="Klucz" onChange={e => setKey(e.target.value)}/>
-                    </Col>
-                    <Col lg={2} className="mb-2">
-                        <Button className="w-100" type="submit" variant="dark" onClick={e => {
-                            e.preventDefault();
+            <Formik 
+                initialValues={{
+                    game: '',
+                    key: ''
+                }}
+                onSubmit={(values,errors) => {  
+                    setKeyAdded(false);
+                    fetch("/addkey", {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + props.token
+                        },
+                        body: JSON.stringify({"game_id": id, "key": values.key})
+                    })
+                    .then(res => { if(res.ok) {setKeyAdded(true);  updateGames(); } else errors.setFieldError('err', 'Key already exists') })
+                    .catch(err => console.log(err));
+                }}
 
-                            var raw = JSON.stringify({"game_id": id, "key": key});
-                            console.log(raw)
-                            var myHeaders = new Headers();
-                            myHeaders.append("Content-Type", "application/json");
-                            myHeaders.append("Authorization", "Bearer " + props.token);
-
-                            fetch("/addkey", {
-                                method: 'POST',
-                                headers: myHeaders,
-                                body: raw
-                            })
-                                .then(res => res.json())
-                                .then(data => {
-                                    console.log(data);
-                                }
-                                );
-
-                        }}>Dodaj</Button>
-                    </Col>
-                </Row>
-            </Form>
+                validationSchema={schema}
+            >
+            {({ handleSubmit, handleChange, values, isValid, errors, touched }) => (
+                <Form className="mb-2" onSubmit={handleSubmit}>
+                    <Row>
+                        <Col lg={4} className="mb-2">
+                            <DropdownButton className="dropdown-fullw-light" id="dropdown-basic-button"
+                                            variant="outline-secondary" title={game}>
+                                {games.map(g => 
+                                    <Dropdown.Item key={g.id} onClick={e => { setGame(g.name); setId(g.id); values.game=game; } } >{g.id}: {g.name} - {g.price} zł</Dropdown.Item> )}
+                            </DropdownButton>
+                            {errors.game ? <p className="text-danger">{errors.game}</p> : null}
+                            
+                        </Col>
+                        <Col lg={6} className="mb-2">
+                            <Form.Control name="key" value={values.key} type="text" placeholder="Klucz" onChange={handleChange}
+                                isInvalid={touched.key && !!errors.key}/>
+                            <Form.Control.Feedback type="invalid">{errors.key}</Form.Control.Feedback>
+                        </Col>
+                        <Col lg={2} className="mb-2">
+                            <Button className="w-100" type="submit" variant="dark" >Dodaj</Button>
+                        </Col>
+                    </Row>
+                    
+                    {errors.err ? <p className="text-danger">{errors.err}</p> : null}
+                </Form>
+                
+            )}
+            </Formik>
+            {keyAdded ? <p className="text-success">Klusz został pomyślnie dodany</p> : null}
 
             <p className="fltr">Wszystkie klucze</p>
-            <p className="fbbt mb-1">#1 - Wiedźmin 3</p>
-
+            
+            {games.map(g => <div><p className="fbbt mb-1">#{g.id} - {g.name}</p>
+            
             <Table responsive>
                 <thead>
                     <tr>
                         <th className="no-border-top">Klucz</th>
-                        <th className="no-border-top">Czy sprzedany?</th>
-                        <th className="no-border-top"></th>
+                        <th className="no-border-top" style={{ width: "250px" }}>Czy sprzedany?</th>
+                        {/* <th className="no-border-top" style={{ width: "60px" }}></th> */}
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>7EY04-J6046-8FTHH</td>
-                        <td>Tak</td>
-                        <td style={{ width: "60px" }}>
+                    {g.keys.map(k => <tr>
+                        <td>{k.key}</td>
+                        <td>{k.used ? "Tak" : "Nie"}</td>
+                        {/* <td style={{ width: "60px" }}>
                             <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>7EY04-J6046-8FTHH</td>
-                        <td>Nie</td>
-                        <td style={{ width: "60px" }}>
-                            <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
-                        </td>
-                    </tr>
+                        </td> */}
+                    </tr>)}
+                    
                     <tr><td colspan="2"></td></tr>
                 </tbody>
             </Table>
+            
+            </div>)}
 
-            <p className="fbbt mb-1">#2 - Skyrim</p>
-            <Table responsive>
-                <thead>
-                    <tr>
-                        <th className="no-border-top">Klucz</th>
-                        <th className="no-border-top">Czy sprzedany?</th>
-                        <th className="no-border-top"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>7EY04-J6046-8FTHH</td>
-                        <td>Tak</td>
-                        <td style={{ width: "60px" }}>
-                            <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>7EY04-J6046-8FTHH</td>
-                        <td>Nie</td>
-                        <td style={{ width: "60px" }}>
-                            <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
-                        </td>
-                    </tr>
-                    <tr><td colspan="2"></td></tr>
-                </tbody>
-            </Table>
 
         </LayoutAdmin>
     );

@@ -150,27 +150,30 @@ export const Admin_users = (props) => {
                 onSubmit={(values,errors) => {  
                     setUserEdited(false);             
                     console.log(password);
-                    
+                    if(usrid === '') {
+                        errors.setFieldError('err', 'Choose username...');
+                    } else {
 
-                    fetch('/edituser', {
-                        method: 'PUT', 
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + props.token
-                        },
-                        body: JSON.stringify({"user_id": usrid, "newemail": email, "newpass": password, "newrole": role})
-                    }).then(res => {
-                        if(res.ok) {
-                            console.log("Pomyślnie zedytowano użytkownika");
-                            updateUsersList();
-                            setUserEdited(true);
-                        } else {
-                            if(res.status === 409)
-                                errors.setFieldError('err', "Użytkownik o takim loginie lub mailu już istnieje");
-                            else
-                                errors.setFieldError('err', "Server side eror");
-                        }
-                    });
+                        fetch('/edituser', {
+                            method: 'PUT', 
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + props.token
+                            },
+                            body: JSON.stringify({"user_id": usrid, "newemail": email, "newpass": password, "newrole": role})
+                        }).then(res => {
+                            if(res.ok) {
+                                console.log("Pomyślnie zedytowano użytkownika");
+                                updateUsersList();
+                                setUserEdited(true);
+                            } else {
+                                if(res.status === 409)
+                                    errors.setFieldError('err', "Użytkownik o takim loginie lub mailu już istnieje");
+                                else
+                                    errors.setFieldError('err', "Server side eror");
+                            }
+                        });
+                    }
                     
                 }}
 
