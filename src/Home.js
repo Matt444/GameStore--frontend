@@ -23,11 +23,9 @@ const SideBar = (props) => (
         <p className="fltr mb-0 mt-1">Platformy</p>
         {props.platforms.map((plat) => <Platform key={plat.id} id={plat.id} platform={plat.name.toUpperCase()} 
                                             handlePlatformSelect={props.handlePlatformSelect}/> ) }
-
+{/* 
         <p className="fltr mb-0 mt-1">Wiek</p>
-        <Form.Check className="fbbt mt-1" type="checkbox" id="7" label="7" />
-        <Form.Check className="fbbt mt-1" type="checkbox" id="14" label="14" />
-        <Form.Check className="fbbt mt-1" type="checkbox" id="18" label="18" />
+        {props.ageCategories.map((name) => <Form.Check className="fbbt mt-1" type="checkbox" key={name} id={name} label={name} onClick={() => props.handleAgeCategorySelect(name)} />)} */}
 
         <p className="fltr mb-0 mt-1">Forma</p>
         <Form.Check className="fbbt mt-1" type="checkbox" id="BOX" label="BOX" onClick={() => props.handleFormSelect("BOX")} />
@@ -116,11 +114,12 @@ export const  Home = () => {
     const [categories, setCategories] = useState([]);
     const [platforms, setPlatforms] = useState([]);
     const [games, setGames] = useState([]);
+    const [ageCategories, setAgeCategories] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [currPage, setCurrPage] = useState(1);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
-    const [selectedAgeCategories, setSelectedAgeCategories] = useState([]);
+    const [selectedAgeCategories, setSelectedAgeCategories] = useState('');
     const [selectedForms, setSelectedForms] = useState({box: false, key: false});
 
 
@@ -192,6 +191,21 @@ export const  Home = () => {
         updateGamesList(1);
     }
 
+    const handleAgeCategorySelect = (id) => {
+        const index = selectedAgeCategories.indexOf(id);
+        console.log(index);
+        if(index !== -1) {
+            selectedAgeCategories.slice(index,1);
+            setAgeCategories(selectedAgeCategories);
+        } else {
+            selectedAgeCategories.push(id);
+            setSelectedAgeCategories(selectedAgeCategories);
+        }
+
+        setCurrPage(1);
+        updateGamesList(1);
+    }
+
     const handleFormSelect = (id) => {
         if(id === 'BOX')
             selectedForms.box = !selectedForms.box;
@@ -212,6 +226,11 @@ export const  Home = () => {
         fetch("/platforms")
         .then(res => res.json())
         .then(data => setPlatforms(data.platforms))
+        .catch(err => console.log(err));
+
+        fetch("/agecategories")
+        .then(res => res.json())
+        .then(data => setAgeCategories(data.age_categories.map(a => a[0])))
         .catch(err => console.log(err));
 
         updateGamesList(1);
@@ -246,9 +265,9 @@ export const  Home = () => {
             <Row>
                 <Col sm={3}>
                     
-                    <SideBar categories={categories} platforms={platforms} 
+                    <SideBar categories={categories} platforms={platforms} ageCategories={ageCategories}
                         handleCategorySelect={handleCategorySelect} handlePlatformSelect={handlePlatformSelect} 
-                        handleFormSelect={handleFormSelect}  />
+                        handleAgeCategorySelect={handleAgeCategorySelect} handleFormSelect={handleFormSelect}  />
 
                 </Col>
                 <Col sm={9}>
