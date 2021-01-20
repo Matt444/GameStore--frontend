@@ -262,37 +262,36 @@ export const Admin_games = (props) => {
                 onSubmit={(values,errors) => {  
                     console.log(values);
                     setGameEdited(false);
+                    if(gameId !== undefined) {
 
+                        let categories_id = [];
+                        values.categories.map(name => categories_id = categories_id.concat( allCategories.map(cat => cat.name === name ? cat.id : undefined )) );
+                        categories_id = categories_id.filter(x => x !== undefined);
+                        console.log(categories_id);
 
-                    let categories_id = [];
-                    values.categories.map(name => categories_id = categories_id.concat( allCategories.map(cat => cat.name === name ? cat.id : undefined )) );
-                    categories_id = categories_id.filter(x => x !== undefined);
-                    console.log(categories_id);
+                        let is_digital = 1;
+                        if (values.quantity && values.quantity > 0){
+                                is_digital = 0;
+                        }
 
-                    let is_digital = 1;
-                    if (values.quantity && values.quantity > 0){
-                            is_digital = 0;
+                        fetch("/editgame", {
+                            method: 'POST',
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": "Bearer " + props.token
+                            },
+                            body: JSON.stringify({"game_id": gameId , "price" : price, "quantity" : values.quantity,
+                            "description" : description, "release_date" : "default",
+                            "platform_id" : platform, "age_category" : values.age, 
+                            "categories" : categories_id , "release-date": values.date.toString() }),
+                            redirect: 'follow'
+                        }).then(res => { if(res.ok) { setGameEdited(true); updateGames(); } else errors.setFieldError('err','Wystąpił błąd') })
+                        .catch(err => console.log(err));
                     }
-
-                    fetch("/editgame", {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": "Bearer " + props.token
-                        },
-                        body: JSON.stringify({"game_id": gameId ,"name": name, "price" : price, "quantity" : values.quantity,
-                        "description" : description, "release_date" : "default", "is_digital" : is_digital,
-                        "platform_id" : platform, "age_category" : values.age, 
-                        "categories" : categories_id , "release-date": values.date.toString() }),
-                        redirect: 'follow'
-                    }).then(res => { if(res.ok) { setGameEdited(true); updateGames(); } else errors.setFieldError('err','Wystąpił błąd') })
-                    .catch(err => console.log(err));
-
                     
                 }}
 
                 validationSchema={yup.object({
-                    name: yup.string().required('Choose game...'),
                     quantity: yup.number().moreThan(-0.0000000001),
                     price: yup.number().moreThan(-0.0000000001),
                     age: yup.string(),
@@ -309,6 +308,7 @@ export const Admin_games = (props) => {
                                 {allGames ? allGames.map((g,index) => <Dropdown.Item onClick={() => 
                                     { handleSetGameEdit(index); values.name=g.name; }}>{g.name}</Dropdown.Item>) : null}
                             </DropdownButton>
+                            {touched.name && gameId === undefined ? <p className="text-danger" style={{fontSize: "80%"}}>Choose game...</p> : null}
                         </Col>
                         <Col lg={2} className="mb-2">
                             <Form.Control name="price" type="text" placeholder="Cena (zł)" value={price} onChange={(e) => {setPrice(e.target.value); values.price = e.target.value;}}
