@@ -34,16 +34,11 @@ export const Login = ({ setToken, setRole }) => {
                             return res.json();
                         } else {
                             errors.setFieldError('all', 'Invalid username or password');
-                            throw new Error('Invalid username or password');
                         }
                     })
                     .then(data => {
-                        console.log(data)
-                        console.log(data.access_token);
-                        const token = data.access_token;
-                        const role = data.user.role;
-                        setToken(token);
-                        setRole(role);
+                        setToken(data.access_token);
+                        setRole(data.user.role);
                         window.location.replace("/");
                     })
                     .catch(error => console.log('error', error));       
@@ -66,6 +61,11 @@ export const Login = ({ setToken, setRole }) => {
 
             )}
             </Formik>
+            <div className="mt-2">
+                <span className="fbbt">Nie masz konta? </span>
+                <Button href="/register" className="p-0 mb-1" variant="link">Zarejestruj się</Button>
+            </div>
+            
         </main>
     );
 };

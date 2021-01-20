@@ -78,7 +78,7 @@ export const Admin_games = (props) => {
                 method: 'POST',
                 headers: myHeaders,
                 body: JSON.stringify({"search_filter":{
-                    "digital": 1,
+                    "digital": -1,
                     "page_number": i
                 }}),
                 redirect: 'follow'
@@ -386,12 +386,20 @@ export const Admin_games = (props) => {
             <thead>
                 <tr>
                     <th className="no-border-top">Nazwa</th>
-                    <th className="no-border-top" style={{ width: "120px" }}>Actions</th>
+                    <th className="no-border-top">Platforma</th>
+                    <th className="no-border-top">Forma</th>
+                    <th className="no-border-top">Ilość</th>
+                    <th className="no-border-top">Cena</th>
+                    <th className="no-border-top" style={{ width: "60px" }}></th>
                 </tr>
             </thead>
             <tbody>
                 {allGames ? allGames.map((g,index) => <tr>
                     <td>{g.name}</td>
+                    <td>{g.platform.name.toUpperCase()}</td>
+                    <td>{g.is_digital ? 'KEY' : 'BOX'}</td>
+                    <td>{g.quantity}</td>
+                    <td>{g.price} zł</td>
                     <td>
                         {/* <Button className="icon p-0 mr-2 pb-1" variant="link"> <BoxArrowUpRight className="text-black-50" size={20} /> </Button> */}
                         <Button className="icon p-0 mr-2" href="#edit" variant="link"> <PencilSquare className="text-black-50" size={20} onClick={() => handleSetGameEdit(index)} /> </Button>

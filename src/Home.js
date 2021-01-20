@@ -128,7 +128,7 @@ export const  Home = () => {
         myHeaders.append("Content-Type", "application/json");
 
         // digital -> -1 - all forms, 0 - box, 1 - digital
-        let digital = 1;
+        let digital = -1;
         if(selectedForms.box === true && selectedForms.key === false) digital = 0;
         if(selectedForms.box === false && selectedForms.key === true) digital = 1;
         let raw = JSON.stringify({"search_filter":{
