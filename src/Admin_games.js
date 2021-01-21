@@ -143,7 +143,7 @@ export const Admin_games = (props) => {
                             is_digital = 0;
                     }
 
-                    fetch("/editgame", {
+                    fetch("/addgame", {
                         method: 'POST',
                         headers: {
                             "Content-Type": "application/json",
