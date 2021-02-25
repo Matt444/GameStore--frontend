@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import { Forbidden } from './Forbidden';
 import { Table, Form, Button, Row, Col, DropdownButton, Dropdown } from 'react-bootstrap';
-import { LayoutAdmin } from './components/LayoutAdmin';
-import { BoxArrowUpRight, PencilSquare, XCircle } from 'react-bootstrap-icons';
+import { PencilSquare } from 'react-bootstrap-icons';
 import DropdownMultiselect from 'react-multiselect-dropdown-bootstrap';
 import DatePicker from 'react-date-picker';
 import { Formik, useField, useFormikContext } from 'formik';
 import * as yup from 'yup';
+
+import { ForbiddenPage } from './ForbiddenPage';
+import { LayoutAdmin } from '../layouts/LayoutAdmin';
 
 const DatePickerField = ({ ...props }) => {
     const { setFieldValue } = useFormikContext();
@@ -39,7 +40,7 @@ const DropdownMultiselectField = ({ ...props }) => {
   };
 
   
-export const Admin_games = (props) => {
+export const AdminGamesPage = (props) => {
     const [allGames, setAllGames] = useState([]);
     const [gameId, setGameId] = useState();
     const [name, setName] = useState("");
@@ -111,8 +112,8 @@ export const Admin_games = (props) => {
     }, []);
 
 
-    if(!props.token || props.role != 'admin')
-        return <Forbidden />;
+    if(!props.token || props.role !== 'admin')
+        return <ForbiddenPage />;
         
     return (
     <LayoutAdmin>
@@ -269,10 +270,6 @@ export const Admin_games = (props) => {
                         categories_id = categories_id.filter(x => x !== undefined);
                         console.log(categories_id);
 
-                        let is_digital = 1;
-                        if (values.quantity && values.quantity > 0){
-                                is_digital = 0;
-                        }
 
                         fetch("/editgame", {
                             method: 'POST',

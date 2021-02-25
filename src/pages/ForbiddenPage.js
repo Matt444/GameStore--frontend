@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 
-export const Forbidden = () => (
+export const ForbiddenPage = () => (
     <div className="mt-5">
         <h1 className="font-weight-bold">403 Forbidden</h1>
         <h2>Sorry, you have no power here ;)</h2>

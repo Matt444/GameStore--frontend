@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import { Forbidden } from './Forbidden';
 import { Table, Form, Button, Row, Col, DropdownButton, Dropdown } from 'react-bootstrap';
-import { LayoutAdmin } from './components/LayoutAdmin';
 import { PencilSquare, XCircle } from 'react-bootstrap-icons';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+
+import { ForbiddenPage } from './ForbiddenPage';
+import { LayoutAdmin } from '../layouts/LayoutAdmin';
 
 const schemaUser = yup.object({
     username: yup.string().required('Username is required'),
@@ -20,7 +21,7 @@ const schemaEditUser = yup.object({
     role: yup.string(),
 });
 
-export const Admin_users = (props) => {
+export const AdminUsersPage = (props) => {
     const [users, setUsers] = useState([]);
     const [userAdded, setUserAdded] = useState(false);
     const [userEdited, setUserEdited] = useState(false);
@@ -31,7 +32,7 @@ export const Admin_users = (props) => {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('0');
 
-    const updateUsersList = () => {
+    useEffect(() => {
         fetch('/allusers', {
             method: 'GET',
             headers: {
@@ -40,11 +41,7 @@ export const Admin_users = (props) => {
             },
         }).then(res => res.json())
         .then(data => setUsers(data.users));
-    }
-
-    useEffect(() => {
-        updateUsersList();
-    }, []);
+    }, [userEdited, userAdded, props.token]);
 
     const handleSetUserEdit = (id) => {
         setUsrid(users[id].id);
@@ -53,8 +50,8 @@ export const Admin_users = (props) => {
         setRole(users[id].role);
     }
 
-    if(!props.token || props.role != 'admin')
-        return <Forbidden />;
+    if(!props.token || props.role !== 'admin')
+        return <ForbiddenPage />;
 
     return (
         <LayoutAdmin>
@@ -70,8 +67,8 @@ export const Admin_users = (props) => {
                 onSubmit={(values,errors) => {  
                     setUserAdded(false);             
                     console.log(values);
-                    let url, request;
-                    if(values.role == '1')  // Admin
+                    let url;
+                    if(values.role === '1')  // Admin
                         url = '/registeradmin';
                     else // User
                         url = '/register';
@@ -86,7 +83,6 @@ export const Admin_users = (props) => {
                     }).then(res => {
                         if(res.ok) {
                             console.log("Dodano użytkownika");
-                            updateUsersList();
                             setUserAdded(true);
                         } else {
                             if(res.status === 409)
@@ -164,7 +160,6 @@ export const Admin_users = (props) => {
                         }).then(res => {
                             if(res.ok) {
                                 console.log("Pomyślnie zedytowano użytkownika");
-                                updateUsersList();
                                 setUserEdited(true);
                             } else {
                                 if(res.status === 409)
@@ -246,7 +241,7 @@ export const Admin_users = (props) => {
                                                 'Authorization': 'Bearer ' + props.token
                                             },
                                             body: JSON.stringify({"user_id": u.id})
-                                    }).then(res => { if(res.ok) updateUsersList(); } )
+                                    }).then(res => { if(res.ok) setUserEdited(true); } )
                                     .catch(err => console.log(err));
                                 }}> <XCircle className="text-black-50" size={20} /> </Button>
                             </td>

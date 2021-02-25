@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -9,7 +9,7 @@ const schema = yup.object({
     password: yup.string().min(8).max(50).required(),
 });
 
-export const Register = () => {
+export const RegisterPage = () => {
 
     return (
         <main className="ml-auto mr-auto text-center" style={{marginTop: "17vh", width: "350px"}}>

@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Row, Col, Table, Alert } from 'react-bootstrap';
-import useCart from './components/useCart';
-import useAlerts from './components/useAlerts';
 
-export const Game = (props) => {
-    const id = props.match.params.id;
+import useCart from '../components/useCart';
+import useAlerts from '../components/useAlerts';
+
+export const GamePage = (props) => {
     const [game, setGame] = useState();
     const { addGame, gameIndex } = useCart();
     const { alerts, addAlert, delAlert } = useAlerts();
 
     useEffect(() => {
-        fetch('/game/' + id)
+        fetch('/game/' + props.match.params.id)
         .then(res => res.json())
         .then(data => setGame(data.game))
         .catch(err => console.log('err', err));
-    }, []);
+    }, [props.match.params.id]);
 
     return (
         <div>

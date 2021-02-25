@@ -1,69 +1,71 @@
 import React, {useEffect, useState} from 'react';
-import { Forbidden } from './Forbidden';
 import { Table, Form, Button, Row, Col, DropdownButton, Dropdown } from 'react-bootstrap';
-import { LayoutAdmin } from './components/LayoutAdmin';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+
+import { ForbiddenPage } from './ForbiddenPage';
+import { LayoutAdmin } from '../layouts/LayoutAdmin';
+
 
 const schema = yup.object({
     game: yup.string().required('Choose game...'),
     key: yup.string().required(),
 });
 
-export const Admin_keys = (props) => {
+export const AdminKeysPage = (props) => {
     const [game, setGame] = useState("Choose game...");
     const [games, setGames] = useState([]);
     const [id, setId] = useState();
     const [keyAdded, setKeyAdded] = useState(false);
 
-    const updateGames = async () => {
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-
-        let i = 1;
-        let totalPages = 1;
-        let arr = [];
-
-        while (i <= totalPages) {
-            const res = await fetch("/games", {
-                method: 'POST',
-                headers: myHeaders,
-                body: JSON.stringify({"search_filter":{
-                    "digital": 1,
-                    "page_number": i
-                }}),
-                redirect: 'follow'
-            });
-            const data = await res.json();
-            totalPages = Math.ceil(data.total_number / data.results_per_page);
-            
-            arr = await arr.concat(data.games);
-            i++;
+    useEffect(() => {
+        async function fetchData() {
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+    
+            let i = 1;
+            let totalPages = 1;
+            let arr = [];
+    
+            while (i <= totalPages) {
+                const res = await fetch("/games", {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: JSON.stringify({"search_filter":{
+                        "digital": 1,
+                        "page_number": i
+                    }}),
+                    redirect: 'follow'
+                });
+                const data = await res.json();
+                totalPages = Math.ceil(data.total_number / data.results_per_page);
+                
+                arr = await arr.concat(data.games);
+                i++;
+            }
+    
+            myHeaders.append("Authorization", "Bearer " + props.token);
+            await Promise.all(arr.map(async(g, index) => {
+                const res = await fetch('/keys?game_id=' + g.id, {
+                    headers: {
+                        'Authorization': 'Bearer ' + props.token
+                    },
+                });
+                const data = await res.json();
+                arr[index].keys = data.keys ? data.keys : [];
+    
+            }))
+    
+            setGames(arr);
         }
 
-        myHeaders.append("Authorization", "Bearer " + props.token);
-        await Promise.all(arr.map(async(g, index) => {
-            const res = await fetch('/keys?game_id=' + g.id, {
-                headers: {
-                    'Authorization': 'Bearer ' + props.token
-                },
-            });
-            const data = await res.json();
-            arr[index].keys = data.keys ? data.keys : [];
+        fetchData();
 
-        }))
-
-        setGames(arr);
-    }
-
-    useEffect(async () => {
-        updateGames();
-        
-    }, []);
+    }, [keyAdded, props.token]);
 
 
-    if(!props.token || props.role != 'admin')
-        return <Forbidden />;
+    if(!props.token || props.role !== 'admin')
+        return <ForbiddenPage />;
 
     return (
         <LayoutAdmin>
@@ -83,7 +85,7 @@ export const Admin_keys = (props) => {
                         },
                         body: JSON.stringify({"game_id": id, "key": values.key})
                     })
-                    .then(res => { if(res.ok) {setKeyAdded(true);  updateGames(); } else errors.setFieldError('err', 'Key already exists') })
+                    .then(res => { if(res.ok) {setKeyAdded(true); } else errors.setFieldError('err', 'Key already exists') })
                     .catch(err => console.log(err));
                 }}
 
@@ -120,7 +122,7 @@ export const Admin_keys = (props) => {
 
             <p className="fltr">Wszystkie klucze</p>
             
-            {games.map(g => <div><p className="fbbt mb-1">#{g.id} - {g.name}</p>
+            {games.map(g => g.keys.length > 0 ? (<div><p className="fbbt mb-1">#{g.id} - {g.name}</p>
             
             <Table responsive>
                 <thead>
@@ -143,7 +145,7 @@ export const Admin_keys = (props) => {
                 </tbody>
             </Table>
             
-            </div>)}
+            </div>) : null)}
 
 
         </LayoutAdmin>

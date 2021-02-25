@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Forbidden } from './Forbidden';
 import { Button, Form, Row, Col } from 'react-bootstrap';
-import { LayoutMyAccount } from './components/LayoutMyAccount';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+
+import { ForbiddenPage } from './ForbiddenPage';
+import { LayoutMyAccount } from '../layouts/LayoutMyAccount';
 
 const schemaEmail = yup.object({
     email: yup.string().email('Must be a valid email').required('Email is required'),
@@ -17,12 +18,12 @@ const schemaPass = yup.object({
      .oneOf([yup.ref('password'), null], 'Passwords must match')
 });
 
-export const User_edit = (props) => {
+export const MyaccountEditPage = (props) => {
     const [isEmailChanged, setIsEmailChanged] = useState(false);
     const [isPassChanged, setIsPassChanged] = useState(false);
 
     if(!props.token)
-        return <Forbidden />;
+        return <ForbiddenPage />;
 
     return (
         <LayoutMyAccount>
@@ -30,7 +31,7 @@ export const User_edit = (props) => {
 
             <p className="fltr">Zmień email</p>
 
-            {isEmailChanged == false ? 
+            {isEmailChanged === false ? 
 
             <Formik 
                 initialValues={{
@@ -82,7 +83,7 @@ export const User_edit = (props) => {
 
             <p className="fltr">Zmień hasło</p>
 
-            {isPassChanged == false ?
+            {isPassChanged === false ?
 
             <Formik 
                 initialValues={{

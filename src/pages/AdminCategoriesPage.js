@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import { Forbidden } from './Forbidden';
-import { Table, Form, Button, Row, Col, DropdownButton, Dropdown } from 'react-bootstrap';
-import { LayoutAdmin } from './components/LayoutAdmin';
+import { Table, Form, Button, Row, Col } from 'react-bootstrap';
 import { XCircle } from 'react-bootstrap-icons';
 
+import { ForbiddenPage } from './ForbiddenPage';
+import { LayoutAdmin } from '../layouts/LayoutAdmin';
 
-export const Admin_categories = (props) => {
+export const AdminCategoriesPage = (props) => {
     const [categories, setCategories] = useState([]);
     const [category, setCategory] = useState("");
     useEffect(() => {
@@ -16,8 +16,8 @@ export const Admin_categories = (props) => {
         );
     }, []);
 
-    if(!props.token || props.role != 'admin')
-        return <Forbidden />;
+    if(!props.token || props.role !== 'admin')
+        return <ForbiddenPage />;
         
     return (
 

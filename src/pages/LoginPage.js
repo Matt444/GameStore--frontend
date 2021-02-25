@@ -9,7 +9,7 @@ const schema = yup.object({
     password: yup.string().min(2).max(15).required(),
 });
 
-export const Login = ({ setToken, setRole }) => {
+export const LoginPage = ({ setToken, setRole }) => {
 
 
     return (
@@ -70,6 +70,6 @@ export const Login = ({ setToken, setRole }) => {
     );
 };
 
-Login.propTypes = {
+LoginPage.propTypes = {
     setToken: PropTypes.func.isRequired
 }

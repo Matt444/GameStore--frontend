@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Form, Button, Image, Card, Pagination } from 'react-bootstrap';
-import { Search, CartPlus, CartCheck, CartX } from 'react-bootstrap-icons';
-import bkg from './home.jpg';
-import min from './min.jpg';
-import useCart from './components/useCart';
-import './Home.css';
+import { Row, Col, Form, Button, Image, Pagination } from 'react-bootstrap';
+import { Search } from 'react-bootstrap-icons';
+
+import { GameCard } from '../components/GameCard';
+import bkg from '../images/home.jpg';
+import '../styles/Home.css';
 
 const Category = (props) => (   
     <Form.Check className="fbbt mt-1" type="checkbox" id={props.category} label={props.category} onClick={() => props.handleCategorySelect(props.id)}/>
@@ -34,53 +34,9 @@ const SideBar = (props) => (
     </Form>
 );
 
-const GameCard = (props) => {
-    const { addGame, setGame, gameIndex } = useCart();
-    const [inCart, setInCart] = useState(gameIndex(props.id) === -1 ? false : true);
-    
 
-    return (
-        <Col xs={12} md={6} lg={4} className="mt-3">
-            <Card>
-                <a href="#">
-                    {/* <Card.Img variant="top" src={ min } /> */}
-                </a>
-                
-                <Card.Body className="p-2">
-                    <a href={"/game/" + props.id}>
-                        <Card.Title style={{ height: "40px" }} className="fbbt mb-0 pb-0">{props.title}</Card.Title>
-                    </a>
-                    
-                    <div className="d-flex justify-content-between align-items-center mt-0 pt-0">
-                        <span className="fbbt text-black-50">{props.price} zł</span>
-                        <div className="d-flex align-items-center mt-1">
-                            <span className="fbs text-black-50">{props.platform} | {props.form}</span>
-                            { props.quantity > 0 ? 
-                                <Button className="p-0 ml-2 mb-1" onClick={() => { 
-                                    if(!inCart) { 
-                                        addGame(props.id);
-                                        setInCart(true); 
-                                    } else {
-                                        setGame(props.id,0);
-                                        setInCart(false);
-                                    }
-                                }} variant="Link">
-                                    { inCart ? <CartCheck className="p-0 text-secondary icon" size={24} /> :
-                                                <CartPlus className="p-0 text-secondary icon" size={24} /> } 
-                                </Button> :
-                                <Button className="p-0 ml-2 mb-1" variant="Link" disabled><CartX className="p-0 text-secondary" size={24} /></Button>
-                            }
-                            
-                            
-                        </div>
-                    </div>
-                </Card.Body>
-            </Card>
-        </Col>
-    );
-}
 
-export const GamesPagination = (props) => {
+export const GamePagination = (props) => {
     const neighbors = 1;
     const totalPages = props.totalPages;
     const currPage = props.currPage;
@@ -110,112 +66,70 @@ export const GamesPagination = (props) => {
     );
 }
 
-export const  Home = () => {
+export const HomePage = () => {
     const [categories, setCategories] = useState([]);
     const [platforms, setPlatforms] = useState([]);
     const [games, setGames] = useState([]);
     const [ageCategories, setAgeCategories] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [currPage, setCurrPage] = useState(1);
+    const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
     const [selectedAgeCategories, setSelectedAgeCategories] = useState('');
     const [selectedForms, setSelectedForms] = useState({box: false, key: false});
 
-
-    const updateGamesList =(nr, name='') => {
-        let myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-
-        // digital -> -1 - all forms, 0 - box, 1 - digital
-        let digital = -1;
-        if(selectedForms.box === true && selectedForms.key === false) digital = 0;
-        if(selectedForms.box === false && selectedForms.key === true) digital = 1;
-        let raw = JSON.stringify({"search_filter":{
-            "page_number": nr, 
-            "categories_id": selectedCategories,
-            "platforms_id": selectedPlatforms,
-            "name": name,
-            "digital": digital
-        }});
-
-        let requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-        };
-
-        fetch("/games", requestOptions)
-        .then(res => res.json())
-        .then(data => {
-            setGames(data.games);
-            setTotalPages(Math.ceil(data.total_number / data.results_per_page));
-        })
-        .catch(err => console.log(err));
-    }
-
     const handlePageChange = (nr) => {
-        console.log(nr);
         setCurrPage(nr);
-        updateGamesList(nr);
     };
 
     const handleCategorySelect = (id) => {
         const index = selectedCategories.indexOf(id);
-        console.log(index);
-        if(index !== -1) {
-            selectedCategories.splice(index,1)
-            setSelectedCategories(selectedCategories)
+        if(index === -1) {
+            setSelectedCategories([...selectedCategories, id]);
         } else {
-            selectedCategories.push(id)
-            setSelectedCategories(selectedCategories);
+            setSelectedCategories(selectedCategories.filter(cid => cid !== id))
         }
         
         setCurrPage(1);
-        updateGamesList(1);
     }
 
     const handlePlatformSelect = (id) => {
         const index = selectedPlatforms.indexOf(id);
-        console.log(index);
-        if(index !== -1) {
-            selectedPlatforms.splice(index,1)
-            setSelectedPlatforms(selectedPlatforms)
+        if(index === -1) {
+            setSelectedPlatforms([...selectedPlatforms, id])
         } else {
-            selectedPlatforms.push(id)
-            setSelectedPlatforms(selectedPlatforms);
+            setSelectedPlatforms(selectedPlatforms.filter(pid => pid !== id));
         }
         
         setCurrPage(1);
-        updateGamesList(1);
     }
 
     const handleAgeCategorySelect = (id) => {
         const index = selectedAgeCategories.indexOf(id);
         console.log(index);
-        if(index !== -1) {
-            selectedAgeCategories.slice(index,1);
-            setAgeCategories(selectedAgeCategories);
+        if(index === -1) {
+            setAgeCategories([...selectedAgeCategories, id]);
         } else {
-            selectedAgeCategories.push(id);
-            setSelectedAgeCategories(selectedAgeCategories);
+            setSelectedAgeCategories(selectedAgeCategories.filter(agcid => agcid !== id));
         }
 
         setCurrPage(1);
-        updateGamesList(1);
     }
 
     const handleFormSelect = (id) => {
         if(id === 'BOX')
-            selectedForms.box = !selectedForms.box;
+            setSelectedForms({...selectedForms, box: !selectedForms.box})
         if(id === 'KEY')
-            selectedForms.key = !selectedForms.key;
+            setSelectedForms({...selectedForms, key: !selectedForms.key})
         
-        setSelectedForms(selectedForms);
         setCurrPage(1);
-        updateGamesList(1);
     }
+
+    const handleQueryChange = (e) => {
+        e.preventDefault();
+        setSearchQuery(e.target.gameInput.value);
+    } 
 
     useEffect(() => {
         fetch("/categories")
@@ -233,32 +147,49 @@ export const  Home = () => {
         .then(data => setAgeCategories(data.age_categories.map(a => a[0])))
         .catch(err => console.log(err));
 
-        updateGamesList(1);
-
     }, []);
 
         
+    useEffect(() => {
+        // digital -> -1 - all forms, 0 - box, 1 - digital
+        let digital = -1;
+        if(selectedForms.box === true && selectedForms.key === false) digital = 0;
+        if(selectedForms.box === false && selectedForms.key === true) digital = 1;
+
+        fetch("/games", {
+            method: 'POST',
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({"search_filter":{
+                "page_number": currPage, 
+                "categories_id": selectedCategories,
+                "platforms_id": selectedPlatforms,
+                "name": searchQuery,
+                "digital": digital
+            }}),
+            redirect: 'follow'
+        })
+        .then(res => res.json())
+        .then(data => {
+            setGames(data.games);
+            setTotalPages(Math.ceil(data.total_number / data.results_per_page));
+        })
+        .catch(err => console.log(err));
+    }, [currPage, selectedCategories, selectedAgeCategories, selectedPlatforms, selectedForms, searchQuery]);
+
     return (
         <div>
             <Row>
                 <Image src={ bkg } style={{ position: 'absolute', left: "0px", top: "58px", width: "100%", minHeight: "80px" }} />
             </Row>
-            <Row style={{ marginTop: "5vw", marginBottom: "4vw" }}>
-                
+            <Row style={{ marginTop: "5vw", marginBottom: "4vw" }}>       
                 <Col sm={3}></Col>
                 <Col sm={9} style={{ position: "relative" }}>
-                    <Form onSubmit={(e) => { 
-                        e.preventDefault();
-                        updateGamesList(1, document.getElementById("gameInput").value)
-                         }}>
-                        
-                            <Form.Control id="gameInput" type="text" placeholder="Wyszukaj grę..." />
-                            <Button className="icon" variant="Link" type="submit" >
-                                <Search className="text-black-50" Size={24} style={{ position: "absolute", top: "12px", right: "30px" }} />
-                            </Button>
-                        
+                    <Form onSubmit={(e) => handleQueryChange(e)}>
+                        <Form.Control id="gameInput" type="text" placeholder="Wyszukaj grę..." />
+                        <Button className="icon" variant="Link" type="submit" >
+                            <Search className="text-black-50" Size={24} style={{ position: "absolute", top: "12px", right: "30px" }} />
+                        </Button>
                     </Form>
-   
                 </Col>
             </Row>
 
@@ -278,7 +209,7 @@ export const  Home = () => {
                                 quantity={g.quantity} price={g.price} platform={g.platform.name.toUpperCase()} form={g.is_digital ? "KEY": "BOX"} /> 
                         })}
 
-                        <GamesPagination currPage={currPage} totalPages={totalPages} handlePageChange={handlePageChange} />
+                        <GamePagination currPage={currPage} totalPages={totalPages} handlePageChange={handlePageChange} />
 
                     </Row>
 

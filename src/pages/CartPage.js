@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, ButtonGroup, Row, Col, Alert } from 'react-bootstrap';
 import { XCircle } from 'react-bootstrap-icons';
-import useCart from './components/useCart';
-import useAlerts from './components/useAlerts';
-import './Cart.css';
+
+import useCart from '../components/useCart';
+import useAlerts from '../components/useAlerts';
+import '../styles/Cart.css';
 
 const GameRow = (props) => {
     return (
@@ -26,9 +27,10 @@ const GameRow = (props) => {
             </td>
             <td>{props.price} zł</td>
             <td>
-                <a href="#" className="icon">
-                    <XCircle className="text-black-50" onClick={() => props.handleRemoveGames(props.id)} size={20} />
-                </a>    
+                <Button className="p-0 m-0 icon" style={{border: "0px", lineHeight: "20px"}} variant="link">
+                    <XCircle className="text-black-50" onClick={() => props.handleRemoveFromCart(props.id)} size={20} />
+                </Button>    
+                  
             </td>
         </tr>    
     );
@@ -43,21 +45,21 @@ const SummaryRow = (props) => {
     )
 }
 
-export const Cart = (props) => {
+export const CartPage = (props) => {
     const { cart, addGame, delGame, gameIndex, setGame, clearCart } = useCart();
     const { alerts, addAlert, delAlert } = useAlerts([]);
     const [games, setGames] = useState([]);
-    
 
-    const handleRemoveGames = (id) => {
+    const handleRemoveFromCart = (id) => {
         const index = games.map((i) => i.id).indexOf(id);
         games.splice(index,1);
         setGame(id,0);
     }
 
-    useEffect(async () => {
+    
+    useEffect(() => {
+        async function fetchData() {
         let arr = [];
-        if(cart === undefined || cart === null) return;
         await Promise.all(cart.map(async(g) => {
             const res = await fetch('/game/' + g.game_id);
             const data = await res.json();
@@ -65,6 +67,8 @@ export const Cart = (props) => {
         }));
 
         setGames(arr);
+        }
+        fetchData();
 
     }, [] );
 
@@ -105,7 +109,7 @@ export const Cart = (props) => {
                     {games.map((g) => <GameRow id={g.id} key={g.id} title={g.name.charAt(0).toUpperCase() + g.name.slice(1)} platform={g.platform.name.toUpperCase()} 
                         form={g.is_digital ? 'KEY' : 'BOX'} quantity={g.quantity} price={g.price} 
                         inCartQuantity={cart[gameIndex(g.id)].quantity} handleDelGame={delGame} handleAddGame={addGame} 
-                        handleRemoveGames={handleRemoveGames}/>)}
+                        handleRemoveFromCart={handleRemoveFromCart}/>)}
 
                     <tr style={{ height: "0px", position: "relative" }}>
                         <td colSpan="5" style={{ position: "relative" }}></td>                         

@@ -1,26 +1,30 @@
 import React, {useEffect, useState} from 'react';
-import { Forbidden } from './Forbidden';
-import { TableGames } from './components/TableGames';
-import { LayoutMyAccount } from './components/LayoutMyAccount';
 import {Table} from "react-bootstrap";
 
-export const User_orders = (props) => {
+import { ForbiddenPage } from './ForbiddenPage';
+import { LayoutAdmin } from '../layouts/LayoutAdmin';
+
+export const AdminOrdersPage = (props) => {
     const [orders, setOrders] = useState();
-    useEffect(() =>{
-         fetch('/myshoppings', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + props.token
-        },
-    }).then(r => r.json()).then(data => setOrders(data.transactions));
-}, []);
+    
+    useEffect(() => {
+        fetch('/transhistory', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + props.token
+            },
+        })
+        .then(res => res.json())
+        .then(data => setOrders(data.transactions));
+    }, [props.token]);
+
     let listToRender;
     if (orders) {
         listToRender = orders.map(order => {
             return(
                 <div>
-                    <p className="fltr">#{ order.id } - { order.date }</p>
+                    <p className="fltr">#{ order.id } - { order.username } - { order.date }</p>
                     <Table responsive>
                         <thead>
                         <tr>
@@ -39,12 +43,12 @@ export const User_orders = (props) => {
             )
         })
     }
-    if(!props.token)
-        return <Forbidden />;
+    if(!props.token || props.role !== 'admin')
+        return <ForbiddenPage />;
 
-    return (
-        <LayoutMyAccount>
+    return(
+        <LayoutAdmin>
             {listToRender}
-        </LayoutMyAccount>
+        </LayoutAdmin>
     );
 }
