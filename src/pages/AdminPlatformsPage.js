@@ -1,10 +1,42 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Table, Form, Button, Row, Col } from "react-bootstrap";
+import { Table, Form, Button, Row, Col, Spinner } from "react-bootstrap";
 import { XCircle } from "react-bootstrap-icons";
 
 import { ForbiddenPage } from "./ForbiddenPage";
 import { LayoutAdmin } from "../layouts/LayoutAdmin";
 import { UserContext } from "../UserContext";
+import request from "../helpers/request";
+
+const TableOfPlatforms = ({ platforms, onRemovePlatform }) => (
+    <Table responsive>
+        <thead>
+            <tr>
+                <th className="no-border-top">Nazwa</th>
+                <th className="no-border-top"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {platforms.map((platform) => (
+                <tr key={platform.id}>
+                    <td>{platform.name.toUpperCase()}</td>
+                    <td style={{ width: "60px" }}>
+                        <Button className="icon p-0" variant="link">
+                            {" "}
+                            <XCircle
+                                className="text-black-50"
+                                size={20}
+                                onClick={(event) => onRemovePlatform(event, platform.name)}
+                            />{" "}
+                        </Button>
+                    </td>
+                </tr>
+            ))}
+            <tr>
+                <td colSpan="2"></td>
+            </tr>
+        </tbody>
+    </Table>
+);
 
 export const AdminPlatformsPage = () => {
     const [platforms, setPlatforms] = useState([]);
@@ -13,13 +45,43 @@ export const AdminPlatformsPage = () => {
     const { user } = useContext(UserContext);
 
     useEffect(() => {
-        fetch("/platforms").then((response) =>
-            response.json().then((data) => {
-                setPlatforms(data.platforms);
-            })
-        );
+        const fetchData = async () => {
+            const { data } = await request.get("/platforms");
+            setPlatforms(data.platforms || []);
+        };
+        fetchData();
     }, []);
     if (!user || !user.isAdmin) return <ForbiddenPage />;
+
+    const handleAddPlatform = async (event) => {
+        event.preventDefault();
+
+        try {
+            const { status } = await request.put(`/addplatform/${platform}`);
+
+            if (status === 201) {
+                const { data } = await request.get("/platforms");
+                setPlatforms(data.platforms || []);
+            }
+        } catch (error) {
+            console.warn(error);
+        }
+    };
+
+    const handleRemovePlatform = async (event, platform) => {
+        event.preventDefault();
+
+        try {
+            const { status } = await request.delete(`/deleteplatform/${platform}`);
+
+            if (status === 201) {
+                const { data } = await request.get("/platforms");
+                setPlatforms(data.platforms);
+            }
+        } catch (error) {
+            console.warn(error);
+        }
+    };
 
     return (
         <LayoutAdmin>
@@ -38,25 +100,7 @@ export const AdminPlatformsPage = () => {
                             className="w-100"
                             type="submit"
                             variant="dark"
-                            onClick={async (e) => {
-                                e.preventDefault();
-
-                                var myHeaders = new Headers();
-                                myHeaders.append("Content-Type", "application/json");
-                                myHeaders.append("Authorization", "Bearer " + user.token);
-
-                                var requestOptions = {
-                                    method: "PUT",
-                                    headers: myHeaders,
-                                };
-                                await fetch("/addplatform/" + platform, requestOptions).then(() => {
-                                    fetch("/platforms").then((response) =>
-                                        response.json().then((data) => {
-                                            setPlatforms(data.platforms);
-                                        })
-                                    );
-                                });
-                            }}
+                            onClick={(event) => handleAddPlatform(event)}
                         >
                             Dodaj
                         </Button>
@@ -66,58 +110,13 @@ export const AdminPlatformsPage = () => {
 
             <p className="fltr">Wszystkie platformy</p>
 
-            <Table responsive>
-                <thead>
-                    <tr>
-                        <th className="no-border-top">Nazwa</th>
-                        <th className="no-border-top"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {platforms.map((platform) => (
-                        <tr key={platform.id}>
-                            <td>{platform.name}</td>
-                            <td style={{ width: "60px" }}>
-                                <Button className="icon p-0" variant="link">
-                                    {" "}
-                                    <XCircle
-                                        className="text-black-50"
-                                        size={20}
-                                        onClick={async (e) => {
-                                            e.preventDefault();
-
-                                            var myHeaders = new Headers();
-                                            myHeaders.append("Content-Type", "application/json");
-                                            myHeaders.append(
-                                                "Authorization",
-                                                "Bearer " + user.token
-                                            );
-
-                                            var requestOptions = {
-                                                method: "DELETE",
-                                                headers: myHeaders,
-                                            };
-                                            await fetch(
-                                                "/deleteplatform/" + platform.name,
-                                                requestOptions
-                                            ).then(() => {
-                                                fetch("/platforms").then((response) =>
-                                                    response.json().then((data) => {
-                                                        setPlatforms(data.platforms);
-                                                    })
-                                                );
-                                            });
-                                        }}
-                                    />{" "}
-                                </Button>
-                            </td>
-                        </tr>
-                    ))}
-                    <tr>
-                        <td colSpan="2"></td>
-                    </tr>
-                </tbody>
-            </Table>
+            {platforms.length === 0 ? (
+                <Spinner animation="border" role="status" size="sm">
+                    <span className="sr-only">Loading...</span>
+                </Spinner>
+            ) : (
+                <TableOfPlatforms platforms={platforms} onRemovePlatform={handleRemovePlatform} />
+            )}
         </LayoutAdmin>
     );
 };

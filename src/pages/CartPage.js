@@ -2,15 +2,18 @@ import React, { useState, useEffect, useContext } from "react";
 import { Table, Button, ButtonGroup, Row, Col, Alert } from "react-bootstrap";
 import { XCircle } from "react-bootstrap-icons";
 
-import useCart from "../components/useCart";
-import useAlerts from "../components/useAlerts";
+import useCart from "../hooks/useCart";
+import useAlerts from "../hooks/useAlerts";
 import { UserContext } from "../UserContext";
+import request from "../helpers/request";
 import "../styles/Cart.css";
 
 const GameRow = (props) => {
     return (
         <tr>
-            <td>{props.title}</td>
+            <td>
+                {props.title} {props.id}
+            </td>
             <td>
                 {props.platform} | {props.form}
             </td>
@@ -87,21 +90,19 @@ export const CartPage = () => {
 
     useEffect(() => {
         async function fetchData() {
-            let arr = [];
             await Promise.all(
                 cart.map(async (g) => {
-                    const res = await fetch("/game/" + g.game_id);
-                    const data = await res.json();
-                    await arr.push(data.game);
+                    const { data } = await request.get(`/game/${g.game_id}`);
+                    setGames((prev) => [...prev, data.game]);
                 })
             );
-
-            setGames(arr);
         }
-        fetchData();
-    }, [cart]);
+        if (games.length === 0) {
+            fetchData();
+        }
+    }, [cart, games.length]);
 
-    if (cart === null || cart === undefined || cart.length === 0) {
+    if (cart.length === 0) {
         return (
             <div>
                 {alerts.map((alert) => (
@@ -222,24 +223,22 @@ export const CartPage = () => {
                                 variant="dark"
                                 className="w-100"
                                 onClick={async () => {
-                                    let myHeaders = new Headers();
-                                    myHeaders.append("Content-Type", "application/json");
+                                    if (user) {
+                                        try {
+                                            const { status } = await request.post("/buy", {
+                                                shopping_cart: cart,
+                                            });
 
-                                    myHeaders.append("Authorization", "Bearer " + user.token);
-                                    let raw = JSON.stringify({ shopping_cart: cart });
-                                    let requestOptions = {
-                                        method: "POST",
-                                        headers: myHeaders,
-                                        body: raw,
-                                        redirect: "follow",
-                                    };
-                                    if (user.token) {
-                                        const res = await fetch("/buy", requestOptions);
-                                        if (res.ok) {
-                                            clearCart();
-                                            addAlert("success", "Pomyślnie zakupiono wybrane gry");
-                                        } else {
+                                            if (status === 201) {
+                                                clearCart();
+                                                addAlert(
+                                                    "success",
+                                                    "Pomyślnie zakupiono wybrane gry"
+                                                );
+                                            }
+                                        } catch (error) {
                                             addAlert("danger", "Wystąpił błąd");
+                                            console.warn(error);
                                         }
                                     } else {
                                         addAlert(

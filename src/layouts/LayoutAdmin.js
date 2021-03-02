@@ -43,9 +43,9 @@ export const LayoutAdmin = (props) => {
                         </NavLink>
                     </p>
                     <p className="mb-2">
-                        <NavLink exact to="/" className="fltr lgray" onClick={() => setUser(null)}>
+                        <a href="/" className="fltr lgray" onClick={() => setUser(null)}>
                             Wyloguj się
-                        </NavLink>
+                        </a>
                     </p>
                 </Col>
 

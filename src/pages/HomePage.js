@@ -3,6 +3,7 @@ import { Row, Col, Form, Button, Image, Pagination } from "react-bootstrap";
 import { Search } from "react-bootstrap-icons";
 
 import { GameCard } from "../components/GameCard";
+import request from "../helpers/request";
 import bkg from "../images/home.jpg";
 import "../styles/Home.css";
 
@@ -74,10 +75,8 @@ export const GamePagination = (props) => {
     const totalPages = props.totalPages;
     const currPage = props.currPage;
     let pages = [];
-    for (let i = currPage - neighbors; i < currPage; i++)
-        if (i > 0) pages.push(i);
-    for (let i = currPage; i <= currPage + neighbors; i++)
-        if (i <= totalPages) pages.push(i);
+    for (let i = currPage - neighbors; i < currPage; i++) if (i > 0) pages.push(i);
+    for (let i = currPage; i <= currPage + neighbors; i++) if (i <= totalPages) pages.push(i);
     const prevPage = currPage - 1 > 0 ? currPage - 1 : 0;
     const nextPage = currPage + 1 <= totalPages ? currPage + 1 : 0;
 
@@ -87,10 +86,7 @@ export const GamePagination = (props) => {
                 {prevPage === 0 ? (
                     <Pagination.Prev key={-1} disabled />
                 ) : (
-                    <Pagination.Prev
-                        key={-1}
-                        onClick={() => props.handlePageChange(prevPage)}
-                    />
+                    <Pagination.Prev key={-1} onClick={() => props.handlePageChange(prevPage)} />
                 )}
                 {pages.map((p) => {
                     if (p === currPage)
@@ -101,10 +97,7 @@ export const GamePagination = (props) => {
                         );
                     else
                         return (
-                            <Pagination.Item
-                                key={p}
-                                onClick={() => props.handlePageChange(p)}
-                            >
+                            <Pagination.Item key={p} onClick={() => props.handlePageChange(p)}>
                                 {p}
                             </Pagination.Item>
                         );
@@ -112,10 +105,7 @@ export const GamePagination = (props) => {
                 {nextPage === 0 ? (
                     <Pagination.Next key={-2} disabled />
                 ) : (
-                    <Pagination.Next
-                        key={-2}
-                        onClick={() => props.handlePageChange(nextPage)}
-                    />
+                    <Pagination.Next key={-2} onClick={() => props.handlePageChange(nextPage)} />
                 )}
             </Pagination>
         </Col>
@@ -147,9 +137,7 @@ export const HomePage = () => {
         if (index === -1) {
             setSelectedCategories([...selectedCategories, id]);
         } else {
-            setSelectedCategories(
-                selectedCategories.filter((cid) => cid !== id)
-            );
+            setSelectedCategories(selectedCategories.filter((cid) => cid !== id));
         }
 
         setCurrPage(1);
@@ -172,9 +160,7 @@ export const HomePage = () => {
         if (index === -1) {
             setAgeCategories([...selectedAgeCategories, id]);
         } else {
-            setSelectedAgeCategories(
-                selectedAgeCategories.filter((agcid) => agcid !== id)
-            );
+            setSelectedAgeCategories(selectedAgeCategories.filter((agcid) => agcid !== id));
         }
 
         setCurrPage(1);
@@ -182,9 +168,15 @@ export const HomePage = () => {
 
     const handleFormSelect = (id) => {
         if (id === "BOX")
-            setSelectedForms({ ...selectedForms, box: !selectedForms.box });
+            setSelectedForms({
+                ...selectedForms,
+                box: !selectedForms.box,
+            });
         if (id === "KEY")
-            setSelectedForms({ ...selectedForms, key: !selectedForms.key });
+            setSelectedForms({
+                ...selectedForms,
+                key: !selectedForms.key,
+            });
 
         setCurrPage(1);
     };
@@ -195,54 +187,48 @@ export const HomePage = () => {
     };
 
     useEffect(() => {
-        fetch("/categories")
-            .then((res) => res.json())
-            .then((data) => setCategories(data.categories))
+        request
+            .get("/categories")
+            .then(({ data }) => setCategories(data.categories))
             .catch((err) => console.log(err));
 
-        fetch("/platforms")
-            .then((res) => res.json())
-            .then((data) => setPlatforms(data.platforms))
+        request
+            .get("/platforms")
+            .then(({ data }) => setPlatforms(data.platforms))
             .catch((err) => console.log(err));
 
-        fetch("/agecategories")
-            .then((res) => res.json())
-            .then((data) =>
-                setAgeCategories(data.age_categories.map((a) => a[0]))
-            )
+        request
+            .get("/agecategories")
+            .then(({ data }) => setAgeCategories(data.age_categories.map((a) => a[0])))
             .catch((err) => console.log(err));
     }, []);
 
     useEffect(() => {
-        // digital -> -1 - all forms, 0 - box, 1 - digital
-        let digital = -1;
-        if (selectedForms.box === true && selectedForms.key === false)
-            digital = 0;
-        if (selectedForms.box === false && selectedForms.key === true)
-            digital = 1;
+        const fetchData = async () => {
+            let digital = -1;
+            if (selectedForms.box === true && selectedForms.key === false) digital = 0;
+            if (selectedForms.box === false && selectedForms.key === true) digital = 1;
 
-        fetch("/games", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                search_filter: {
-                    page_number: currPage,
-                    categories_id: selectedCategories,
-                    platforms_id: selectedPlatforms,
-                    name: searchQuery,
-                    digital: digital,
-                },
-            }),
-            redirect: "follow",
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                setGames(data.games);
-                setTotalPages(
-                    Math.ceil(data.total_number / data.results_per_page)
-                );
-            })
-            .catch((err) => console.log(err));
+            try {
+                const { status, data } = await request.post("/games", {
+                    search_filter: {
+                        page_number: currPage,
+                        categories_id: selectedCategories,
+                        platforms_id: selectedPlatforms,
+                        name: searchQuery,
+                        digital: digital,
+                    },
+                });
+
+                if (status === 200) {
+                    setGames(data.games);
+                    setTotalPages(Math.ceil(data.total_number / data.results_per_page));
+                }
+            } catch (error) {
+                console.warn(error);
+            }
+        };
+        fetchData();
     }, [
         currPage,
         selectedCategories,
@@ -266,15 +252,21 @@ export const HomePage = () => {
                     }}
                 />
             </Row>
-            <Row style={{ marginTop: "5vw", marginBottom: "4vw" }}>
+            <Row
+                style={{
+                    marginTop: "5vw",
+                    marginBottom: "4vw",
+                }}
+            >
                 <Col sm={3}></Col>
-                <Col sm={9} style={{ position: "relative" }}>
+                <Col
+                    sm={9}
+                    style={{
+                        position: "relative",
+                    }}
+                >
                     <Form onSubmit={(e) => handleQueryChange(e)}>
-                        <Form.Control
-                            id="gameInput"
-                            type="text"
-                            placeholder="Wyszukaj grę..."
-                        />
+                        <Form.Control id="gameInput" type="text" placeholder="Wyszukaj grę..." />
                         <Button className="icon" variant="Link" type="submit">
                             <Search
                                 className="text-black-50"
@@ -309,10 +301,7 @@ export const HomePage = () => {
                                 <GameCard
                                     key={g.id}
                                     id={g.id}
-                                    title={
-                                        g.name.charAt(0).toUpperCase() +
-                                        g.name.slice(1)
-                                    }
+                                    title={g.name.charAt(0).toUpperCase() + g.name.slice(1)}
                                     quantity={g.quantity}
                                     price={g.price}
                                     platform={g.platform.name.toUpperCase()}

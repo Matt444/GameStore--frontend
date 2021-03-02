@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Table } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
 
 import { ForbiddenPage } from "./ForbiddenPage";
 import { LayoutAdmin } from "../layouts/LayoutAdmin";
 import { UserContext } from "../UserContext";
+import { TableOfGames } from "../components/Tables/TableOfGames";
 
 export const AdminOrdersPage = () => {
     const [orders, setOrders] = useState([]);
@@ -30,29 +31,22 @@ export const AdminOrdersPage = () => {
                 <p className="fltr">
                     #{order.id} - {order.username} - {order.date}
                 </p>
-                <Table responsive>
-                    <thead>
-                        <tr>
-                            <th className="no-border-top">Gra</th>
-                            <th className="no-border-top" style={{ width: "140px" }}>
-                                Cena
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {order.games_transactions.map((game) => (
-                            <tr key={game.id}>
-                                <td>{game.game_name}</td>
-                                <td>{game.price} zł</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
+                <TableOfGames order={order} />
             </div>
         );
     });
 
     if (!user || !user.isAdmin) return <ForbiddenPage />;
 
-    return <LayoutAdmin>{listToRender}</LayoutAdmin>;
+    return (
+        <LayoutAdmin>
+            {orders.length === 0 ? (
+                <Spinner animation="border" role="status" size="sm">
+                    <span className="sr-only">Loading...</span>
+                </Spinner>
+            ) : (
+                listToRender
+            )}
+        </LayoutAdmin>
+    );
 };

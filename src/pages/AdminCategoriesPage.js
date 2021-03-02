@@ -1,10 +1,42 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Table, Form, Button, Row, Col } from "react-bootstrap";
+import { Table, Form, Button, Row, Col, Spinner } from "react-bootstrap";
 import { XCircle } from "react-bootstrap-icons";
 
 import { ForbiddenPage } from "./ForbiddenPage";
 import { LayoutAdmin } from "../layouts/LayoutAdmin";
 import { UserContext } from "../UserContext";
+import request from "../helpers/request";
+
+const TableOfCategories = ({ categories, onRemoveCategory }) => (
+    <Table responsive>
+        <thead>
+            <tr>
+                <th className="no-border-top">Nazwa</th>
+                <th className="no-border-top"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {categories.map((category) => (
+                <tr key={category.id}>
+                    <td>{category.name.charAt(0).toUpperCase() + category.name.slice(1)}</td>
+                    <td style={{ width: "60px" }}>
+                        <Button
+                            className="icon p-0"
+                            variant="link"
+                            onClick={(event) => onRemoveCategory(event, category.name)}
+                        >
+                            <XCircle className="text-black-50" size={20} />
+                        </Button>
+                    </td>
+                </tr>
+            ))}
+
+            <tr>
+                <td colSpan="2"></td>
+            </tr>
+        </tbody>
+    </Table>
+);
 
 export const AdminCategoriesPage = () => {
     const [categories, setCategories] = useState([]);
@@ -13,14 +45,44 @@ export const AdminCategoriesPage = () => {
     const { user } = useContext(UserContext);
 
     useEffect(() => {
-        fetch("/categories").then((response) =>
-            response.json().then((data) => {
-                setCategories(data.categories);
-            })
-        );
+        const fetchData = async () => {
+            const { data } = await request("/categories");
+            setCategories(data.categories || []);
+        };
+        fetchData();
     }, []);
 
     if (!user || !user.isAdmin) return <ForbiddenPage />;
+
+    const handleAddCategory = async (event) => {
+        event.preventDefault();
+
+        try {
+            const { status } = await request.put(`/addcategory/${category}`);
+
+            if (status === 201) {
+                const { data } = await request("/categories");
+                setCategories(data.categories || []);
+            }
+        } catch (error) {
+            console.warn(error);
+        }
+    };
+
+    const handleRemoveCategory = async (event, category) => {
+        event.preventDefault();
+
+        try {
+            const { status } = await request.delete(`/deletecategory/${category}`);
+
+            if (status === 201) {
+                const { data } = await request("/categories");
+                setCategories(data.categories || []);
+            }
+        } catch (error) {
+            console.warn(error);
+        }
+    };
 
     return (
         <LayoutAdmin>
@@ -39,29 +101,7 @@ export const AdminCategoriesPage = () => {
                             className="w-100"
                             type="submit"
                             variant="dark"
-                            onClick={(e) => {
-                                e.preventDefault();
-
-                                var myHeaders = new Headers();
-                                myHeaders.append("Content-Type", "application/json");
-                                myHeaders.append("Authorization", "Bearer " + user.token);
-
-                                fetch("/addcategory/" + category, {
-                                    method: "PUT",
-                                    headers: myHeaders,
-                                })
-                                    .then((res) => res.json())
-                                    .then((data) => {
-                                        console.log(data);
-                                    })
-                                    .then(() => {
-                                        fetch("/categories").then((response) =>
-                                            response.json().then((data) => {
-                                                setCategories(data.categories);
-                                            })
-                                        );
-                                    });
-                            }}
+                            onClick={(event) => handleAddCategory(event)}
                         >
                             Dodaj
                         </Button>
@@ -71,57 +111,16 @@ export const AdminCategoriesPage = () => {
 
             <p className="fltr">Wszystkie kategorie</p>
 
-            <Table responsive>
-                <thead>
-                    <tr>
-                        <th className="no-border-top">Nazwa</th>
-                        <th className="no-border-top"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {categories.map((category) => (
-                        <tr key={category.id}>
-                            <td>
-                                {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
-                            </td>
-                            <td style={{ width: "60px" }}>
-                                <Button
-                                    className="icon p-0"
-                                    variant="link"
-                                    onClick={async (e) => {
-                                        e.preventDefault();
-
-                                        var myHeaders = new Headers();
-                                        myHeaders.append("Content-Type", "application/json");
-                                        myHeaders.append("Authorization", "Bearer " + user.token);
-
-                                        var requestOptions = {
-                                            method: "DELETE",
-                                            headers: myHeaders,
-                                        };
-                                        await fetch(
-                                            "/deletecategory/" + category.name,
-                                            requestOptions
-                                        ).then(() => {
-                                            fetch("/categories").then((response) =>
-                                                response.json().then((data) => {
-                                                    setCategories(data.categories);
-                                                })
-                                            );
-                                        });
-                                    }}
-                                >
-                                    <XCircle className="text-black-50" size={20} />
-                                </Button>
-                            </td>
-                        </tr>
-                    ))}
-
-                    <tr>
-                        <td colSpan="2"></td>
-                    </tr>
-                </tbody>
-            </Table>
+            {categories.length === 0 ? (
+                <Spinner animation="border" role="status" size="sm">
+                    <span className="sr-only">Loading...</span>
+                </Spinner>
+            ) : (
+                <TableOfCategories
+                    categories={categories}
+                    onRemoveCategory={handleRemoveCategory}
+                />
+            )}
         </LayoutAdmin>
     );
 };
