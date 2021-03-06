@@ -19,13 +19,18 @@ Clone project and install dependecies using `npm install` then run `npm start`.
 ## Screenshots
 > Home
 ![img1](https://github.com/Matt444/store-frontend/blob/master/screenshots/1.png)
+
 > User Panel Page
 ![img2](https://github.com/Matt444/store-frontend/blob/master/screenshots/2.png)
+
 > Admin Panel Page
 ![img3](https://github.com/Matt444/store-frontend/blob/master/screenshots/3.png)
+
 > Admin Panel Page
 ![img4](https://github.com/Matt444/store-frontend/blob/master/screenshots/4.png)
+
 > Cart Page
 ![img5](https://github.com/Matt444/store-frontend/blob/master/screenshots/5.png)
+
 > Game Page
 ![img6](https://github.com/Matt444/store-frontend/blob/master/screenshots/6.png)
