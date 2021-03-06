@@ -9,8 +9,8 @@ E-commerce website directed to selling games with quite complex administration s
 - filter games by categories, platforms, form,
 - manage bucket and buy games,
 - authentication and authorization in 2 levels -> user & admin,
-- panel for user with orders and managing email & password,
-- panel for admin with managing games, users, categories, platforms, keys.
+- panel for user with  orders and managing email & password,
+- panel for admin with all orders and managing games, users, categories, platforms, keys.
 
 ## Getting Started
 
