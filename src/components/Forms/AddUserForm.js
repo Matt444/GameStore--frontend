@@ -84,7 +84,7 @@ export const AddUserForm = ({ setUserAdded }) => {
                             <Form.Control
                                 name="password"
                                 type="password"
-                                placeholder="Password"
+                                placeholder="Hasło"
                                 value={values.password}
                                 onChange={handleChange}
                                 isInvalid={touched.password && !!errors.password}
@@ -103,7 +103,7 @@ export const AddUserForm = ({ setUserAdded }) => {
                                 onChange={handleChange}
                                 isInvalid={touched.role && !!errors.role}
                             >
-                                <option value="0">Role...</option>
+                                <option value="0">Rola...</option>
                                 <option value="1">Admin</option>
                                 <option value="2">User</option>
                             </Form.Control>

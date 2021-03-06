@@ -6,11 +6,11 @@ import * as yup from "yup";
 import request from "../../helpers/request";
 
 export const AddKeyForm = ({ setKeyAdded, games }) => {
-    const [game, setGame] = useState("Choose game...");
+    const [game, setGame] = useState("Wybierz grę...");
     const [id, setId] = useState();
 
     const schema = yup.object({
-        game: yup.string().required("Choose game..."),
+        game: yup.string().required("Wybierz grę..."),
         key: yup.string().required(),
     });
 

@@ -29,8 +29,8 @@ const TableOfAllUsers = ({ users, setIsUserEdited, setEditedUser }) => {
                 <tr>
                     <th className="no-border-top">Username</th>
                     <th className="no-border-top">Email</th>
-                    <th className="no-border-top">Role</th>
-                    <th className="no-border-top">Actions</th>
+                    <th className="no-border-top">Rola</th>
+                    <th className="no-border-top">Akcje</th>
                 </tr>
             </thead>
             <tbody>

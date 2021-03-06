@@ -1,4 +1,4 @@
-import { Button, Form } from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import { Formik } from "formik";
 import * as yup from "yup";
 
@@ -48,27 +48,38 @@ export const RegisterUserForm = ({ setUser }) => {
         >
             {({ handleSubmit, handleChange, values, isValid, errors, touched }) => (
                 <Form onSubmit={handleSubmit}>
-                    <Form.Control
-                        name="username"
-                        value={values.username}
-                        type="text"
-                        placeholder="Username"
-                        onChange={handleChange}
-                        isInvalid={touched.username && !!errors.username}
-                    />
-                    <Form.Control.Feedback type="invalid">{errors.username}</Form.Control.Feedback>
-                    <p className="mb-3"></p>
+                    <Row>
+                        <Col className="pr-1">
+                            <Form.Control
+                                name="username"
+                                value={values.username}
+                                type="text"
+                                placeholder="Username"
+                                onChange={handleChange}
+                                isInvalid={touched.username && !!errors.username}
+                            />
 
-                    <Form.Control
-                        name="email"
-                        value={values.email}
-                        type="text"
-                        placeholder="Email"
-                        onChange={handleChange}
-                        isInvalid={touched.email && !!errors.email}
-                    />
-                    <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
-                    <p className="mb-3"></p>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.username}
+                            </Form.Control.Feedback>
+                            <p className="mb-3"></p>
+                        </Col>
+
+                        <Col className="pl-1">
+                            <Form.Control
+                                name="email"
+                                value={values.email}
+                                type="text"
+                                placeholder="Email"
+                                onChange={handleChange}
+                                isInvalid={touched.email && !!errors.email}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.email}
+                            </Form.Control.Feedback>
+                            <p className="mb-3"></p>
+                        </Col>
+                    </Row>
 
                     <Form.Control
                         name="password"

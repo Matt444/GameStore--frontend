@@ -21,13 +21,6 @@ export const EditUserForm = ({ setIsUserEdited, users, editedUser, setEditedUser
         }
     }, [editedUser]);
 
-    // const handleSetUserEdit = (id) => {
-    //     setUsrid(users[id].id);
-    //     setUsername(users[id].username);
-    //     setEmail(users[id].email);
-    //     setRole(users[id].role);
-    // };
-
     const schemaEditUser = yup.object({
         username: yup.string(),
         email: yup.string().email("Must be a valid email"),
@@ -45,9 +38,9 @@ export const EditUserForm = ({ setIsUserEdited, users, editedUser, setEditedUser
             }}
             onSubmit={async (errors) => {
                 setIsUserEdited(false);
-                console.log(password);
+
                 if (usrid === "") {
-                    errors.setFieldError("err", "Choose username...");
+                    errors.setFieldError("err", "Wybierz użytkownika...");
                 } else {
                     try {
                         const { status } = await request.put("/edituser", {
@@ -82,7 +75,7 @@ export const EditUserForm = ({ setIsUserEdited, users, editedUser, setEditedUser
                                 className="dropdown-fullw-light"
                                 id="dropdown-basic-button"
                                 variant="outline-secondary"
-                                title={username === "" ? "Choose username" : username}
+                                title={username === "" ? "Wybierz użytkownika" : username}
                             >
                                 {users.map((u, index) =>
                                     u.role !== "banned" ? (
@@ -123,7 +116,7 @@ export const EditUserForm = ({ setIsUserEdited, users, editedUser, setEditedUser
                             <Form.Control
                                 name="password"
                                 type="password"
-                                placeholder="Password"
+                                placeholder="Hasło"
                                 value={password}
                                 onChange={(e) => {
                                     setPassword(e.target.value);
@@ -149,7 +142,7 @@ export const EditUserForm = ({ setIsUserEdited, users, editedUser, setEditedUser
                                 isInvalid={touched.role && !!errors.role}
                             >
                                 <option key="0" value="">
-                                    Role...
+                                    Rola...
                                 </option>
                                 <option key="1" value="admin">
                                     Admin
