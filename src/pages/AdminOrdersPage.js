@@ -5,6 +5,7 @@ import { ForbiddenPage } from "./ForbiddenPage";
 import { LayoutAdmin } from "../layouts/LayoutAdmin";
 import { UserContext } from "../UserContext";
 import { TableOfGames } from "../components/Tables/TableOfGames";
+import request from "../helpers/request";
 
 export const AdminOrdersPage = () => {
     const [orders, setOrders] = useState([]);
@@ -12,40 +13,53 @@ export const AdminOrdersPage = () => {
     const { user } = useContext(UserContext);
 
     useEffect(() => {
-        if (user && user.isAdmin) {
-            fetch("/transhistory", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + user.token,
-                },
-            })
-                .then((res) => res.json())
-                .then((data) => setOrders(data.transactions));
-        }
+        const fetchData = async () => {
+            const { data } = await request.get("/orders");
+
+            setOrders(data || []);
+        };
+        fetchData();
     }, [user]);
 
-    const listToRender = orders.map((order) => {
-        return (
-            <div key={order.id}>
-                <p className="fltr">
-                    #{order.id} - {order.username} - {order.date}
-                </p>
-                <TableOfGames order={order} />
-            </div>
-        );
-    });
+    const list =
+        orders &&
+        (orders.length === 0 ? (
+            <p className="fltr">Brak zamówień</p>
+        ) : (
+            orders.map((order) => {
+                const date = new Date(order.date);
+                const day = date.getDay();
+                const month = date.getMonth();
+                const hour = date.getHours();
+                const minute = date.getMinutes();
+                const second = date.getSeconds();
+
+                return (
+                    <div key={order.id}>
+                        <p className="fltr">
+                            <p className="fltr">
+                                #{order.id} -{" "}
+                                {`${day < 10 ? `0${day}` : day}.${
+                                    month < 10 ? `0${month}` : month
+                                }.${date.getFullYear()} ${hour}:${minute}:${second}`}
+                            </p>
+                        </p>
+                        <TableOfGames order={order} />
+                    </div>
+                );
+            })
+        ));
 
     if (!user || !user.isAdmin) return <ForbiddenPage />;
 
     return (
         <LayoutAdmin>
-            {orders.length === 0 ? (
+            {orders ? (
+                list
+            ) : (
                 <Spinner animation="border" role="status" size="sm">
                     <span className="sr-only">Loading...</span>
                 </Spinner>
-            ) : (
-                listToRender
             )}
         </LayoutAdmin>
     );

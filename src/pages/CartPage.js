@@ -11,9 +11,7 @@ import "../styles/Cart.css";
 const GameRow = (props) => {
     return (
         <tr>
-            <td>
-                {props.title} {props.id}
-            </td>
+            <td>{props.title}</td>
             <td>
                 {props.platform} | {props.form}
             </td>
@@ -92,8 +90,8 @@ export const CartPage = () => {
         async function fetchData() {
             await Promise.all(
                 cart.map(async (g) => {
-                    const { data } = await request.get(`/game/${g.game_id}`);
-                    setGames((prev) => [...prev, data.game]);
+                    const { data } = await request.get(`/games/${g.game_id}`);
+                    setGames((prev) => [...prev, data]);
                 })
             );
         }
@@ -176,8 +174,8 @@ export const CartPage = () => {
                     </Table>
 
                     <Row>
-                        <Col sm={7}></Col>
-                        <Col sm={5}>
+                        <Col sm={6}></Col>
+                        <Col sm={6}>
                             <Table className="mb-0">
                                 <thead>
                                     <tr>
@@ -225,9 +223,10 @@ export const CartPage = () => {
                                 onClick={async () => {
                                     if (user) {
                                         try {
-                                            const { status } = await request.post("/buy", {
-                                                shopping_cart: cart,
-                                            });
+                                            const { status } = await request.post(
+                                                "/orders/loggeduser",
+                                                cart
+                                            );
 
                                             if (status === 201) {
                                                 clearCart();

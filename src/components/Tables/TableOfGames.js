@@ -11,9 +11,11 @@ export const TableOfGames = ({ order }) => (
             </tr>
         </thead>
         <tbody>
-            {order.games_transactions.map((game) => (
+            {order.games.map((game) => (
                 <tr key={game.id}>
-                    <td>{game.game_name}</td>
+                    <td>
+                        {game.name} {game.key && `- ${game.key}`}
+                    </td>
                     <td>{game.price} zł</td>
                 </tr>
             ))}

@@ -12,9 +12,9 @@ export const GamePage = (props) => {
 
     useEffect(() => {
         request
-            .get(`/game/${props.match.params.id}`)
-            .then(({ data }) => setGame(data.game))
-            .catch((err) => console.wart(err));
+            .get(`/games/${props.match.params.id}`)
+            .then(({ data }) => setGame(data))
+            .catch((err) => console.warn(err));
     }, [props.match.params.id]);
 
     return (
@@ -34,11 +34,9 @@ export const GamePage = (props) => {
                 <Row>
                     <Col md={8}>
                         <h1 className="font-weight-bold mb-4">
-                            {game === undefined
-                                ? null
-                                : game.name.charAt(0).toUpperCase() + game.name.slice(1)}
+                            {game && game.name.charAt(0).toUpperCase() + game.name.slice(1)}
                         </h1>
-                        <p>{game === undefined ? null : game.description}</p>
+                        <p>{game && game.description}</p>
                     </Col>
 
                     <Col md={4}>
@@ -47,29 +45,24 @@ export const GamePage = (props) => {
                             <tr>
                                 <td className="clear-borders pl-0 pt-0">Kategorie</td>
                                 <td className="clear-borders pt-0" clear-borders>
-                                    {game === undefined
-                                        ? null
-                                        : game.categories.map(
-                                              (cat) => cat.category_name.toUpperCase() + " "
-                                          )}
+                                    {game &&
+                                        game.categories.map((cat) => cat.name.toUpperCase() + " ")}
                                 </td>
                             </tr>
                             <tr>
                                 <td className="clear-borders pl-0 pt-0">Wiek</td>
-                                <td className="clear-borders pt-0">
-                                    {game === undefined ? null : game.age_category}
-                                </td>
+                                <td className="clear-borders pt-0">{game && game.age_category}</td>
                             </tr>
                             <tr>
                                 <td className="clear-borders pl-0 pt-0">Platforma</td>
                                 <td className="clear-borders pt-0">
-                                    {game === undefined ? null : game.platform.name.toUpperCase()}
+                                    {game && game.platform.name.toUpperCase()}
                                 </td>
                             </tr>
                             <tr>
                                 <td className="clear-borders pl-0 pt-0">Forma</td>
                                 <td className="clear-borders pt-0">
-                                    {game === undefined ? null : game.is_digital ? "KEY" : "BOX"}
+                                    {game && game.is_digital ? "KEY" : "BOX"}
                                 </td>
                             </tr>
                         </Table>

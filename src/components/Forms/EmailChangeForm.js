@@ -17,8 +17,8 @@ export const EmailChangeForm = ({ setIsEmailChanged }) => {
             onSubmit={async (values) => {
                 setIsEmailChanged(false);
                 try {
-                    const { status } = await request.put("/chemail", {
-                        newemail: values.email,
+                    const { status } = await request.patch("/users", {
+                        email: values.email,
                     });
                     if (status === 200) {
                         setIsEmailChanged(true);

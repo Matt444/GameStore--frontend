@@ -11,8 +11,8 @@ const Category = (props) => (
     <Form.Check
         className="fbbt mt-1"
         type="checkbox"
-        id={props.category}
-        label={props.category}
+        id={`cat${props.id}`}
+        label={props.name}
         onClick={() => props.handleCategorySelect(props.id)}
     />
 );
@@ -21,8 +21,8 @@ const Platform = (props) => (
     <Form.Check
         className="fbbt mt-1"
         type="checkbox"
-        id={props.platform}
-        label={props.platform}
+        id={`plat${props.id}`}
+        label={props.name}
         onClick={() => props.handlePlatformSelect(props.id)}
     />
 );
@@ -34,7 +34,7 @@ const SideBar = (props) => (
             <Category
                 key={cat.id}
                 id={cat.id}
-                category={cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}
+                name={cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}
                 handleCategorySelect={props.handleCategorySelect}
             />
         ))}
@@ -44,13 +44,22 @@ const SideBar = (props) => (
             <Platform
                 key={plat.id}
                 id={plat.id}
-                platform={plat.name.toUpperCase()}
+                name={plat.name.toUpperCase()}
                 handlePlatformSelect={props.handlePlatformSelect}
             />
         ))}
-        {/* 
+
         <p className="fltr mb-0 mt-1">Wiek</p>
-        {props.ageCategories.map((name) => <Form.Check className="fbbt mt-1" type="checkbox" key={name} id={name} label={name} onClick={() => props.handleAgeCategorySelect(name)} />)} */}
+        {props.ageCategories.map((name) => (
+            <Form.Check
+                className="fbbt mt-1"
+                type="checkbox"
+                key={name}
+                id={name}
+                label={name}
+                onClick={() => props.handleAgeCategorySelect(name)}
+            />
+        ))}
 
         <p className="fltr mb-0 mt-1">Forma</p>
         <Form.Check
@@ -58,14 +67,14 @@ const SideBar = (props) => (
             type="checkbox"
             id="BOX"
             label="BOX"
-            onClick={() => props.handleFormSelect("BOX")}
+            onClick={() => props.handleFormSelect(0)}
         />
         <Form.Check
             className="fbbt mt-1"
             type="checkbox"
             id="KEY"
             label="KEY"
-            onClick={() => props.handleFormSelect("KEY")}
+            onClick={() => props.handleFormSelect(1)}
         />
     </Form>
 );
@@ -116,17 +125,15 @@ export const HomePage = () => {
     const [categories, setCategories] = useState([]);
     const [platforms, setPlatforms] = useState([]);
     const [games, setGames] = useState([]);
-    const [ageCategories, setAgeCategories] = useState([]);
+    const [ageCategories] = useState(["PEGI 3", "PEGI 7", "PEGI 12", "PEGI 16", "PEGI 18"]);
     const [totalPages, setTotalPages] = useState(1);
     const [currPage, setCurrPage] = useState(1);
+    const [resultsPerPage] = useState(12);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedPlatforms, setSelectedPlatforms] = useState([]);
-    const [selectedAgeCategories, setSelectedAgeCategories] = useState("");
-    const [selectedForms, setSelectedForms] = useState({
-        box: false,
-        key: false,
-    });
+    const [selectedAgeCategories, setSelectedAgeCategories] = useState([]);
+    const [selectedForms, setSelectedForms] = useState([]);
 
     const handlePageChange = (nr) => {
         setCurrPage(nr);
@@ -156,9 +163,8 @@ export const HomePage = () => {
 
     const handleAgeCategorySelect = (id) => {
         const index = selectedAgeCategories.indexOf(id);
-        console.log(index);
         if (index === -1) {
-            setAgeCategories([...selectedAgeCategories, id]);
+            setSelectedAgeCategories([...selectedAgeCategories, id]);
         } else {
             setSelectedAgeCategories(selectedAgeCategories.filter((agcid) => agcid !== id));
         }
@@ -167,16 +173,12 @@ export const HomePage = () => {
     };
 
     const handleFormSelect = (id) => {
-        if (id === "BOX")
-            setSelectedForms({
-                ...selectedForms,
-                box: !selectedForms.box,
-            });
-        if (id === "KEY")
-            setSelectedForms({
-                ...selectedForms,
-                key: !selectedForms.key,
-            });
+        const index = selectedForms.indexOf(id);
+        if (index === -1) {
+            setSelectedForms([...selectedForms, id]);
+        } else {
+            setSelectedForms(selectedForms.filter((fid) => fid !== id));
+        }
 
         setCurrPage(1);
     };
@@ -189,40 +191,39 @@ export const HomePage = () => {
     useEffect(() => {
         request
             .get("/categories")
-            .then(({ data }) => setCategories(data.categories))
+            .then(({ data }) => setCategories(data))
             .catch((err) => console.log(err));
 
         request
             .get("/platforms")
-            .then(({ data }) => setPlatforms(data.platforms))
+            .then(({ data }) => setPlatforms(data))
             .catch((err) => console.log(err));
 
-        request
-            .get("/agecategories")
-            .then(({ data }) => setAgeCategories(data.age_categories.map((a) => a[0])))
-            .catch((err) => console.log(err));
+        // request
+        //     .get("/agecategories")
+        //     .then((data) => setAgeCategories(data.age_categories.map((a) => a[0])))
+        //     .catch((err) => console.log(err));
     }, []);
 
     useEffect(() => {
         const fetchData = async () => {
-            let digital = -1;
-            if (selectedForms.box === true && selectedForms.key === false) digital = 0;
-            if (selectedForms.box === false && selectedForms.key === true) digital = 1;
-
             try {
-                const { status, data } = await request.post("/games", {
-                    search_filter: {
-                        page_number: currPage,
+                const { status, data } = await request.post(
+                    `/games/search?limit=${resultsPerPage}&offset=${
+                        (currPage - 1) * resultsPerPage
+                    }`,
+                    {
+                        name: searchQuery,
+                        is_digital: selectedForms,
+                        age_categories: selectedAgeCategories,
                         categories_id: selectedCategories,
                         platforms_id: selectedPlatforms,
-                        name: searchQuery,
-                        digital: digital,
-                    },
-                });
+                    }
+                );
 
                 if (status === 200) {
                     setGames(data.games);
-                    setTotalPages(Math.ceil(data.total_number / data.results_per_page));
+                    setTotalPages(Math.ceil(data.totalGamesNumber / resultsPerPage));
                 }
             } catch (error) {
                 console.warn(error);
@@ -236,6 +237,7 @@ export const HomePage = () => {
         selectedPlatforms,
         selectedForms,
         searchQuery,
+        resultsPerPage,
     ]);
 
     return (
@@ -306,6 +308,7 @@ export const HomePage = () => {
                                     price={g.price}
                                     platform={g.platform.name.toUpperCase()}
                                     form={g.is_digital ? "KEY" : "BOX"}
+                                    image_url={g.image_url}
                                 />
                             );
                         })}
@@ -313,6 +316,7 @@ export const HomePage = () => {
                         <GamePagination
                             currPage={currPage}
                             totalPages={totalPages}
+                            resultsPerPage={resultsPerPage}
                             handlePageChange={handlePageChange}
                         />
                     </Row>

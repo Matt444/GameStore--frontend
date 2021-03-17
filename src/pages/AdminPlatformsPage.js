@@ -25,7 +25,7 @@ const TableOfPlatforms = ({ platforms, onRemovePlatform }) => (
                             <XCircle
                                 className="text-black-50"
                                 size={20}
-                                onClick={(event) => onRemovePlatform(event, platform.name)}
+                                onClick={(event) => onRemovePlatform(event, platform.id)}
                             />{" "}
                         </Button>
                     </td>
@@ -39,7 +39,7 @@ const TableOfPlatforms = ({ platforms, onRemovePlatform }) => (
 );
 
 export const AdminPlatformsPage = () => {
-    const [platforms, setPlatforms] = useState([]);
+    const [platforms, setPlatforms] = useState();
     const [platform, setPlatform] = useState("");
 
     const { user } = useContext(UserContext);
@@ -47,7 +47,7 @@ export const AdminPlatformsPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             const { data } = await request.get("/platforms");
-            setPlatforms(data.platforms || []);
+            setPlatforms(data || []);
         };
         fetchData();
     }, []);
@@ -57,26 +57,26 @@ export const AdminPlatformsPage = () => {
         event.preventDefault();
 
         try {
-            const { status } = await request.put(`/addplatform/${platform}`);
+            const { status } = await request.post(`/platforms/`, { name: platform });
 
             if (status === 201) {
                 const { data } = await request.get("/platforms");
-                setPlatforms(data.platforms || []);
+                setPlatforms(data || []);
             }
         } catch (error) {
             console.warn(error);
         }
     };
 
-    const handleRemovePlatform = async (event, platform) => {
+    const handleRemovePlatform = async (event, id) => {
         event.preventDefault();
 
         try {
-            const { status } = await request.delete(`/deleteplatform/${platform}`);
+            const { status } = await request.delete(`/platforms/${id}`);
 
-            if (status === 201) {
+            if (status === 200) {
                 const { data } = await request.get("/platforms");
-                setPlatforms(data.platforms);
+                setPlatforms(data);
             }
         } catch (error) {
             console.warn(error);
@@ -110,10 +110,12 @@ export const AdminPlatformsPage = () => {
 
             <p className="fltr">Wszystkie platformy</p>
 
-            {platforms.length === 0 ? (
+            {platforms === undefined ? (
                 <Spinner animation="border" role="status" size="sm">
                     <span className="sr-only">Loading...</span>
                 </Spinner>
+            ) : platforms.length === 0 ? (
+                <p className="fbbt mb-1">Brak</p>
             ) : (
                 <TableOfPlatforms platforms={platforms} onRemovePlatform={handleRemovePlatform} />
             )}

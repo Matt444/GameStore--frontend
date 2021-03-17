@@ -9,7 +9,7 @@ export const AddUserForm = ({ setUserAdded }) => {
         username: yup.string().required("Username is required"),
         email: yup.string().email("Must be a valid email").required("Email is required"),
         password: yup.string().required("Password is required"),
-        role: yup.string().not(["0"], "Choose role"),
+        role: yup.string().required("Choose role"),
     });
 
     return (
@@ -23,15 +23,12 @@ export const AddUserForm = ({ setUserAdded }) => {
             onSubmit={async (values, errors) => {
                 setUserAdded(false);
 
-                let url;
-                if (values.role === "1") url = "/registeradmin";
-                else url = "/register";
-
                 try {
-                    const { status } = await request.post(url, {
+                    const { status } = await request.post("users", {
                         username: values.username,
                         email: values.email,
                         password: values.password,
+                        role: values.role === "1" ? "admin" : "user",
                     });
 
                     if (status === 201) {
@@ -103,7 +100,7 @@ export const AddUserForm = ({ setUserAdded }) => {
                                 onChange={handleChange}
                                 isInvalid={touched.role && !!errors.role}
                             >
-                                <option value="0">Rola...</option>
+                                <option value="">Rola...</option>
                                 <option value="1">Admin</option>
                                 <option value="2">User</option>
                             </Form.Control>

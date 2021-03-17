@@ -21,7 +21,7 @@ const TableOfKeys = ({ keys }) => (
         <tbody>
             {keys.map((key) => (
                 <tr key={key.id}>
-                    <td>{key.key}</td>
+                    <td>{key.gkey}</td>
                     <td>{key.used ? "Tak" : "Nie"}</td>
                     {/* <td style={{ width: "60px" }}>
                             <Button className="icon p-0" variant="link"> <XCircle className="text-black-50" size={20} /> </Button>
@@ -38,50 +38,30 @@ const TableOfKeys = ({ keys }) => (
 
 export const AdminKeysPage = () => {
     const [games, setGames] = useState([]);
+    const [keys, setKeys] = useState();
     const [keyAdded, setKeyAdded] = useState(false);
 
     const { user } = useContext(UserContext);
 
     useEffect(() => {
         async function fetchData() {
-            var myHeaders = new Headers();
-            myHeaders.append("Content-Type", "application/json");
+            try {
+                const { data } = await request.post("/games/search", {
+                    is_digital: [1],
+                });
 
-            let i = 1;
-            let totalPages = 1;
-            let arr = [];
-
-            while (i <= totalPages) {
-                try {
-                    const { data, status } = await request.post("/games", {
-                        search_filter: { digital: 1, page_number: i },
-                    });
-
-                    if (status === 200) {
-                        totalPages = Math.ceil(data.total_number / data.results_per_page);
-                        arr = await arr.concat(data.games);
-                    }
-                } catch (error) {
-                    console.warn(error);
-                }
-
-                i++;
+                setGames(data.games);
+            } catch (error) {
+                console.warn(error);
             }
-            await Promise.all(
-                arr.map(async (g, index) => {
-                    try {
-                        const { data, status } = await request.get(`/keys?game_id=${g.id}`);
 
-                        if (status === 200) {
-                            arr[index].keys = data.keys;
-                        }
-                    } catch (error) {
-                        console.warn(error);
-                    }
-                })
-            );
+            try {
+                const { data } = await request.get("/keys");
 
-            setGames(arr);
+                setKeys(data);
+            } catch (error) {
+                console.warn(error);
+            }
         }
 
         fetchData();
@@ -99,21 +79,25 @@ export const AdminKeysPage = () => {
 
             <p className="fltr">Wszystkie klucze</p>
 
-            {games.length === 0 ? (
+            {keys === undefined ? (
                 <Spinner animation="border" role="status" size="sm">
                     <span className="sr-only">Loading...</span>
                 </Spinner>
+            ) : keys.length === 0 ? (
+                <p className="fbbt mb-1">Brak</p>
             ) : (
-                games.map((g) =>
-                    g.keys.length > 0 ? (
+                games.map((g) => {
+                    const gameKeys = keys.filter((k) => k.game.id === g.id);
+
+                    return gameKeys.length === 0 ? null : (
                         <div key={g.id}>
                             <p className="fbbt mb-1">
                                 #{g.id} - {g.name}
                             </p>
-                            <TableOfKeys keys={g.keys} />
+                            <TableOfKeys keys={gameKeys} />
                         </div>
-                    ) : null
-                )
+                    );
+                })
             )}
         </LayoutAdmin>
     );

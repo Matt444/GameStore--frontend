@@ -19,7 +19,9 @@ const TableOfAllGames = ({ allGames, setEditedGame }) => (
                 <th className="no-border-top">Wiek</th>
                 <th className="no-border-top">Ilość</th>
                 <th className="no-border-top">Cena</th>
-                <th className="no-border-top" style={{ width: "60px" }}></th>
+                <th className="no-border-top" style={{ width: "60px" }}>
+                    Akcje
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -56,7 +58,7 @@ const TableOfAllGames = ({ allGames, setEditedGame }) => (
 );
 
 export const AdminGamesPage = () => {
-    const [allGames, setAllGames] = useState([]);
+    const [allGames, setAllGames] = useState();
     const [editedGame, setEditedGame] = useState();
 
     const [allPlatforms, setAllPlatforms] = useState([]);
@@ -68,40 +70,20 @@ export const AdminGamesPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            let i = 1;
-            let totalPages = 1;
-            let arr = [];
+            const { data } = await request.get("/games");
 
-            while (i <= totalPages) {
-                try {
-                    const { data, status } = await request.post("/games", {
-                        search_filter: {
-                            digital: -1,
-                            page_number: i,
-                        },
-                    });
-
-                    if (status === 200) {
-                        totalPages = Math.ceil(data.total_number / data.results_per_page);
-                        arr = await arr.concat(data.games);
-                    }
-                } catch (error) {
-                    console.warn(error);
-                }
-                i++;
-            }
-            setAllGames(arr);
+            setAllGames(data.games);
         };
         fetchData();
     }, [isGameAdded, isGameEdited]);
 
     useEffect(() => {
         request.get("/categories").then(({ data }) => {
-            setAllCategories(data.categories || []);
+            setAllCategories(data || []);
         });
 
         request.get("/platforms").then(({ data }) => {
-            setAllPlatforms(data.platforms || []);
+            setAllPlatforms(data || []);
         });
     }, []);
 
@@ -139,10 +121,12 @@ export const AdminGamesPage = () => {
 
             <p className="fltr">Wszystkie gry</p>
 
-            {allGames.length === 0 ? (
+            {allGames === undefined ? (
                 <Spinner animation="border" role="status" size="sm">
                     <span className="sr-only">Loading...</span>
                 </Spinner>
+            ) : allGames.length === 0 ? (
+                <p className="fbbt mb-1">Brak</p>
             ) : (
                 <TableOfAllGames allGames={allGames} setEditedGame={setEditedGame} />
             )}

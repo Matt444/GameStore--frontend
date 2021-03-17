@@ -17,6 +17,7 @@ const DatePickerField = ({ ...props }) => {
             onChange={(val) => {
                 setFieldValue(field.name, val);
             }}
+            format="y-MM-dd"
         />
     );
 };
@@ -44,6 +45,8 @@ export const AddGameForm = ({ setGameAdded, allCategories, allPlatforms, updateG
         categories: yup.array().min(1).required("Categories are required"),
         platform: yup.string().required("Platform is required"),
         date: yup.date().required("Date is required"),
+        description: yup.string().required("Description is required"),
+        image_url: yup.string(),
     });
 
     return (
@@ -57,6 +60,7 @@ export const AddGameForm = ({ setGameAdded, allCategories, allPlatforms, updateG
                 categories: [],
                 platform: "",
                 date: new Date(),
+                image_url: "",
             }}
             onSubmit={async (values, errors) => {
                 setGameAdded(false);
@@ -77,17 +81,17 @@ export const AddGameForm = ({ setGameAdded, allCategories, allPlatforms, updateG
                 }
 
                 try {
-                    const { status } = await request.post("/addgame", {
+                    const { status } = await request.post("/games", {
                         name: values.name,
                         price: values.price,
                         quantity: values.quantity,
                         description: values.description,
-                        release_date: "default",
                         is_digital: is_digital,
                         platform_id: values.platform,
                         age_category: values.age,
-                        categories: categories_id,
-                        "release-date": values.date.toString(),
+                        categories_id: categories_id,
+                        release_date: `${values.date.getFullYear()}-${values.date.getMonth()}-${values.date.getDay()}`,
+                        image_url: values.image_url || "https://i.stack.imgur.com/y9DpT.jpg",
                     });
 
                     if (status === 201) {
@@ -188,16 +192,11 @@ export const AddGameForm = ({ setGameAdded, allCategories, allPlatforms, updateG
                                 onChange={handleChange}
                             >
                                 <option value="">Wiek</option>
-                                <option value="PEGI3">PEGI3</option>
-                                <option value="PEGI4">PEGI4</option>
-                                <option value="PEGI6">PEGI6</option>
-                                <option value="PEGI7">PEGI7</option>
-                                <option value="PEGI11">PEGI11</option>
-                                <option value="PEGI12">PEGI12</option>
-                                <option value="PEGI15">PEGI15</option>
-                                <option value="PEGI14">PEGI14</option>
-                                <option value="PEGI16">PEGI16</option>
-                                <option value="PEGI18">PEGI18</option>
+                                <option value="PEGI 3">PEGI 3</option>
+                                <option value="PEGI 7">PEGI 7</option>
+                                <option value="PEGI 12">PEGI 12</option>
+                                <option value="PEGI 16">PEGI 16</option>
+                                <option value="PEGI 18">PEGI 18</option>
                             </Form.Control>
                             {touched.age && errors.age ? (
                                 <p className="text-danger" style={{ fontSize: "80%" }}>
@@ -209,6 +208,7 @@ export const AddGameForm = ({ setGameAdded, allCategories, allPlatforms, updateG
                                 className="calendar mb-2"
                                 name="date"
                                 value={values.date}
+                                isInvalid={touched.date && !!errors.date}
                             />
                             <Form.Control.Feedback type="invalid">
                                 {errors.date}
@@ -224,9 +224,25 @@ export const AddGameForm = ({ setGameAdded, allCategories, allPlatforms, updateG
                                 placeholder="Opis"
                                 value={values.description}
                                 onChange={handleChange}
+                                isInvalid={touched.description && !!errors.description}
                             />
                             <Form.Control.Feedback type="invalid">
                                 {errors.description}
+                            </Form.Control.Feedback>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col lg={12} className="mb-2">
+                            <Form.Control
+                                name="image_url"
+                                type="text"
+                                value={values.image_url}
+                                placeholder="Image URL - if blank default image"
+                                onChange={handleChange}
+                                isInvalid={touched.image_url && !!errors.image_url}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.image_url}
                             </Form.Control.Feedback>
                         </Col>
                     </Row>

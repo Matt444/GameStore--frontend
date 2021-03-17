@@ -20,17 +20,17 @@ export const RegisterUserForm = ({ setUser }) => {
             }}
             onSubmit={async (values, errors) => {
                 try {
-                    const { status } = await request.post("/register", values);
+                    const { status } = await request.post("/auth/register", values);
 
                     if (status === 201) {
-                        const { data } = await request.post("/auth", {
+                        const { data } = await request.post("/auth/login", {
                             username: values.username,
                             password: values.password,
                         });
 
                         const user = {
-                            token: data.access_token,
-                            isAdmin: data.user.role === "admin",
+                            token: data.token,
+                            isAdmin: data.role === "admin",
                         };
                         setUser(user);
 

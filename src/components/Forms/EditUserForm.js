@@ -24,7 +24,7 @@ export const EditUserForm = ({ setIsUserEdited, users, editedUser, setEditedUser
     const schemaEditUser = yup.object({
         username: yup.string(),
         email: yup.string().email("Must be a valid email"),
-        password: yup.string(),
+        password: yup.string().min(6),
         role: yup.string(),
     });
 
@@ -43,11 +43,10 @@ export const EditUserForm = ({ setIsUserEdited, users, editedUser, setEditedUser
                     errors.setFieldError("err", "Wybierz użytkownika...");
                 } else {
                     try {
-                        const { status } = await request.put("/edituser", {
-                            user_id: usrid,
-                            newemail: email,
-                            newpass: password,
-                            newrole: role,
+                        const { status } = await request.patch(`/users/${usrid}`, {
+                            email: email || undefined,
+                            password: password || undefined,
+                            role: role || undefined,
                         });
 
                         if (status === 200) {
@@ -77,23 +76,24 @@ export const EditUserForm = ({ setIsUserEdited, users, editedUser, setEditedUser
                                 variant="outline-secondary"
                                 title={username === "" ? "Wybierz użytkownika" : username}
                             >
-                                {users.map((u, index) =>
-                                    u.role !== "banned" ? (
-                                        <Dropdown.Item
-                                            key={index}
-                                            onClick={() => {
-                                                setEditedUser(u);
-                                                setUsername(u.username);
-                                                setUsrid(u.id);
-                                                values.username = username;
-                                            }}
-                                        >
-                                            {u.username}
-                                        </Dropdown.Item>
-                                    ) : (
-                                        ""
-                                    )
-                                )}
+                                {users &&
+                                    users.map((u, index) =>
+                                        u.role !== "banned" ? (
+                                            <Dropdown.Item
+                                                key={index}
+                                                onClick={() => {
+                                                    setEditedUser(u);
+                                                    setUsername(u.username);
+                                                    setUsrid(u.id);
+                                                    values.username = username;
+                                                }}
+                                            >
+                                                {u.username}
+                                            </Dropdown.Item>
+                                        ) : (
+                                            ""
+                                        )
+                                    )}
                             </DropdownButton>
                         </Col>
                         <Col lg={3} className="mb-2">

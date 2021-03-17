@@ -50,7 +50,7 @@ export const NavigationBar = () => {
     return (
         <Navbar collapseOnSelect className="pl-0 pr-0">
             <Navbar.Brand className="pl-0" href="/">
-                Store.
+                GameStore.
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">

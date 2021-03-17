@@ -4,16 +4,16 @@ import { CartPlus, CartCheck, CartX } from "react-bootstrap-icons";
 
 import useCart from "../hooks/useCart";
 
-export const GameCard = ({ id, title, price, platform, quantity, form }) => {
+export const GameCard = ({ id, title, price, platform, quantity, form, image_url }) => {
     const { addGame, setGame, gameIndex } = useCart();
     const [inCart, setInCart] = useState(gameIndex(id) === -1 ? false : true);
 
     return (
         <Col xs={12} md={6} lg={4} className="mt-3">
             <Card>
-                {/* <a href="#">
-                    <Card.Img variant="top" src={ min } />
-                </a> */}
+                <a href={"/game/" + id}>
+                    <Card.Img variant="top" style={{ height: "140px" }} src={image_url} />
+                </a>
 
                 <Card.Body className="p-2">
                     <a href={"/game/" + id}>

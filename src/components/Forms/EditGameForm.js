@@ -18,6 +18,7 @@ const DatePickerField = ({ ...props }) => {
             onChange={(val) => {
                 setFieldValue(field.name, val);
             }}
+            format="y-MM-dd"
         />
     );
 };
@@ -29,6 +30,7 @@ const DropdownMultiselectField = ({ ...props }) => {
         <DropdownMultiselect
             {...field}
             {...props}
+            selected={field.categories}
             handleOnChange={(val) => {
                 setFieldValue(field.name, val);
             }}
@@ -52,6 +54,7 @@ export const EditGameForm = ({
     const [categories, setCategories] = useState([]);
     const [age, setAge] = useState("");
     const [platform, setPlatform] = useState("");
+    const [image, setImage] = useState("");
 
     useEffect(() => {
         if (editedGame) {
@@ -63,6 +66,7 @@ export const EditGameForm = ({
             setCategories(editedGame.categories.map((c) => c.name));
             setAge(editedGame.age_category);
             setPlatform(editedGame.platform.id);
+            setImage(editedGame.image_url);
         }
     }, [editedGame]);
 
@@ -73,6 +77,7 @@ export const EditGameForm = ({
         categories: yup.array(),
         platform: yup.string(),
         date: yup.date().required("Date is required"),
+        image_url: yup.string(),
     });
 
     return (
@@ -86,6 +91,7 @@ export const EditGameForm = ({
                 categories: [],
                 platform: "",
                 date: new Date(),
+                image_url: "",
             }}
             onSubmit={async (values, errors) => {
                 setIsGameEdited(false);
@@ -100,20 +106,21 @@ export const EditGameForm = ({
                     categories_id = categories_id.filter((x) => x !== undefined);
                     console.log(categories_id);
 
+                    console.log("image", image);
+
                     try {
-                        const { status } = await request.post("/editgame", {
-                            game_id: gameId,
-                            price: price,
-                            quantity: values.quantity,
-                            description: description,
-                            release_date: "default",
-                            platform_id: platform,
-                            age_category: values.age,
-                            categories: categories_id,
-                            "release-date": values.date.toString(),
+                        const { status } = await request.patch(`/games/${gameId}`, {
+                            price: price || undefined,
+                            quantity: values.quantity || undefined,
+                            description: description || undefined,
+                            platform_id: platform || undefined,
+                            age_category: values.age || undefined,
+                            categories_id: categories_id || undefined,
+                            release_date: `${values.date.getFullYear()}-${values.date.getMonth()}-${values.date.getDay()}`,
+                            image_url: image || undefined,
                         });
 
-                        if (status === 201) {
+                        if (status === 200) {
                             setIsGameEdited(true);
                         }
                     } catch (error) {
@@ -134,19 +141,18 @@ export const EditGameForm = ({
                                 variant="outline-secondary"
                                 title={name === "" ? "Wybierz grę..." : name}
                             >
-                                {allGames
-                                    ? allGames.map((g) => (
-                                          <Dropdown.Item
-                                              key={g.id}
-                                              onClick={() => {
-                                                  setEditedGame(g);
-                                                  values.name = g.name;
-                                              }}
-                                          >
-                                              {g.name}
-                                          </Dropdown.Item>
-                                      ))
-                                    : null}
+                                {allGames &&
+                                    allGames.map((g) => (
+                                        <Dropdown.Item
+                                            key={g.id}
+                                            onClick={() => {
+                                                setEditedGame(g);
+                                                values.name = g.name;
+                                            }}
+                                        >
+                                            {g.name}
+                                        </Dropdown.Item>
+                                    ))}
                             </DropdownButton>
                             {touched.name && gameId === undefined ? (
                                 <p className="text-danger" style={{ fontSize: "80%" }}>
@@ -195,8 +201,7 @@ export const EditGameForm = ({
                                     buttonClass="mb-2 dropdownmulti-light"
                                     placeholder="Kategorie"
                                     options={allCategories.map((i) => i.name)}
-                                    selected={categories}
-                                    handleOnChange={(s) => setCategories(s)}
+                                    categories={categories}
                                 />
                             )}
                             {touched.categories && errors.categories ? (
@@ -242,16 +247,11 @@ export const EditGameForm = ({
                                 }}
                             >
                                 <option value="">Wiek</option>
-                                <option value="PEGI3">PEGI3</option>
-                                <option value="PEGI4">PEGI4</option>
-                                <option value="PEGI6">PEGI6</option>
-                                <option value="PEGI7">PEGI7</option>
-                                <option value="PEGI11">PEGI11</option>
-                                <option value="PEGI12">PEGI12</option>
-                                <option value="PEGI15">PEGI15</option>
-                                <option value="PEGI14">PEGI14</option>
-                                <option value="PEGI16">PEGI16</option>
-                                <option value="PEGI18">PEGI18</option>
+                                <option value="PEGI 3">PEGI 3</option>
+                                <option value="PEGI 7">PEGI 7</option>
+                                <option value="PEGI 12">PEGI 12</option>
+                                <option value="PEGI 16">PEGI 16</option>
+                                <option value="PEGI 18">PEGI 18</option>
                             </Form.Control>
                             {touched.age && errors.age ? (
                                 <p className="text-danger" style={{ fontSize: "80%" }}>
@@ -277,10 +277,31 @@ export const EditGameForm = ({
                                 name="description"
                                 placeholder="Opis"
                                 value={description}
-                                onChange={handleChange}
+                                onChange={(e) => {
+                                    setDescription(e.target.value);
+                                    values.description = e.target.value;
+                                }}
                             />
                             <Form.Control.Feedback type="invalid">
                                 {errors.description}
+                            </Form.Control.Feedback>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col lg={12} className="mb-2">
+                            <Form.Control
+                                name="image_url"
+                                type="text"
+                                value={image}
+                                placeholder="Image URL"
+                                onChange={(e) => {
+                                    setImage(e.target.value);
+                                    values.image_url = e.target.value;
+                                }}
+                                isInvalid={touched.image_url && !!errors.image_url}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.image_url}
                             </Form.Control.Feedback>
                         </Col>
                     </Row>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Table, Button, Spinner } from "react-bootstrap";
-import { PencilSquare, XCircle } from "react-bootstrap-icons";
+import { PencilSquare } from "react-bootstrap-icons";
 
 import { ForbiddenPage } from "./ForbiddenPage";
 import { LayoutAdmin } from "../layouts/LayoutAdmin";
@@ -56,7 +56,7 @@ const TableOfAllUsers = ({ users, setIsUserEdited, setEditedUser }) => {
                                     onClick={() => handleRemoveUser(u.id)}
                                 >
                                     {" "}
-                                    <XCircle className="text-black-50" size={20} />{" "}
+                                    {/* <XCircle className="text-black-50" size={20} />{" "} */}
                                 </Button>
                             </td>
                         </tr>
@@ -72,7 +72,7 @@ const TableOfAllUsers = ({ users, setIsUserEdited, setEditedUser }) => {
 };
 
 export const AdminUsersPage = () => {
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState();
     const [userAdded, setUserAdded] = useState(false);
     const [isUserEdited, setIsUserEdited] = useState(false);
     const [editedUser, setEditedUser] = useState(null);
@@ -82,10 +82,10 @@ export const AdminUsersPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const { data, status } = await request.get("/allusers");
+                const { data, status } = await request.get("/users");
 
                 if (status === 200) {
-                    setUsers(data.users);
+                    setUsers(data);
                 }
             } catch (error) {
                 console.warn(error);
@@ -121,10 +121,12 @@ export const AdminUsersPage = () => {
 
             <p className="fltr">Wszyscy użytkownicy</p>
 
-            {users.length === 0 ? (
+            {users === undefined ? (
                 <Spinner animation="border" role="status" size="sm">
                     <span className="sr-only">Loading...</span>
                 </Spinner>
+            ) : users.length === 0 ? (
+                <p className="fbbt mb-1">Brak</p>
             ) : (
                 <TableOfAllUsers
                     users={users}

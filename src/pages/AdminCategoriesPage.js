@@ -23,7 +23,7 @@ const TableOfCategories = ({ categories, onRemoveCategory }) => (
                         <Button
                             className="icon p-0"
                             variant="link"
-                            onClick={(event) => onRemoveCategory(event, category.name)}
+                            onClick={(event) => onRemoveCategory(event, category.id)}
                         >
                             <XCircle className="text-black-50" size={20} />
                         </Button>
@@ -39,7 +39,7 @@ const TableOfCategories = ({ categories, onRemoveCategory }) => (
 );
 
 export const AdminCategoriesPage = () => {
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState();
     const [category, setCategory] = useState("");
 
     const { user } = useContext(UserContext);
@@ -47,7 +47,7 @@ export const AdminCategoriesPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             const { data } = await request("/categories");
-            setCategories(data.categories || []);
+            setCategories(data || []);
         };
         fetchData();
     }, []);
@@ -58,26 +58,26 @@ export const AdminCategoriesPage = () => {
         event.preventDefault();
 
         try {
-            const { status } = await request.put(`/addcategory/${category}`);
+            const { status } = await request.post(`/categories`, { name: category });
 
             if (status === 201) {
                 const { data } = await request("/categories");
-                setCategories(data.categories || []);
+                setCategories(data || []);
             }
         } catch (error) {
             console.warn(error);
         }
     };
 
-    const handleRemoveCategory = async (event, category) => {
+    const handleRemoveCategory = async (event, id) => {
         event.preventDefault();
 
         try {
-            const { status } = await request.delete(`/deletecategory/${category}`);
+            const { status } = await request.delete(`/categories/${id}`);
 
-            if (status === 201) {
+            if (status === 200) {
                 const { data } = await request("/categories");
-                setCategories(data.categories || []);
+                setCategories(data || []);
             }
         } catch (error) {
             console.warn(error);
@@ -111,10 +111,12 @@ export const AdminCategoriesPage = () => {
 
             <p className="fltr">Wszystkie kategorie</p>
 
-            {categories.length === 0 ? (
+            {categories === undefined ? (
                 <Spinner animation="border" role="status" size="sm">
                     <span className="sr-only">Loading...</span>
                 </Spinner>
+            ) : categories.length === 0 ? (
+                <p className="fbbt mb-1">Brak</p>
             ) : (
                 <TableOfCategories
                     categories={categories}

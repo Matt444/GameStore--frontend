@@ -14,9 +14,9 @@ export const MyaccountOrdersPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const { data } = await request.get("/myshoppings");
+            const { data } = await request.get("/orders/loggeduser");
 
-            setOrders(data.transactions || []);
+            setOrders(data || []);
         };
 
         fetchData();
@@ -28,10 +28,20 @@ export const MyaccountOrdersPage = () => {
             <p className="fltr">Brak zamówień</p>
         ) : (
             orders.map((order) => {
+                const date = new Date(order.date);
+                const day = date.getDay();
+                const month = date.getMonth();
+                const hour = date.getHours();
+                const minute = date.getMinutes();
+                const second = date.getSeconds();
+
                 return (
                     <div key={order.id}>
                         <p className="fltr">
-                            #{order.id} - {order.date}
+                            #{order.id} -{" "}
+                            {`${day < 10 ? `0${day}` : day}.${
+                                month < 10 ? `0${month}` : month
+                            }.${date.getFullYear()} ${hour}:${minute}:${second}`}
                         </p>
                         <TableOfGames order={order} />
                     </div>

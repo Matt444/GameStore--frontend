@@ -18,18 +18,18 @@ export const LoginForm = ({ setUser }) => {
             }}
             onSubmit={async (values, errors) => {
                 try {
-                    const { status, data } = await request.post("/auth", values);
+                    const { status, data } = await request.post("/auth/login", values);
 
                     if (status === 200) {
                         const user = {
-                            token: data.access_token,
-                            isAdmin: data.user.role === "admin",
+                            token: data.token,
+                            isAdmin: data.role === "admin",
                         };
                         setUser(user);
                         window.location = "/";
                     }
                 } catch (error) {
-                    if (error.response.status === 401) {
+                    if (error.response.status === 404) {
                         errors.setFieldError("all", "Invalid username or password");
                     } else {
                         console.warn(error);

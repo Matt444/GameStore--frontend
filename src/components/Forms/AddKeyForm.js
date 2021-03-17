@@ -24,9 +24,9 @@ export const AddKeyForm = ({ setKeyAdded, games }) => {
                 setKeyAdded(false);
 
                 try {
-                    const { status } = await request.post("/addkey", {
+                    const { status } = await request.post("/keys", {
                         game_id: id,
-                        key: values.key,
+                        gkey: values.key,
                     });
 
                     if (status === 201) {
