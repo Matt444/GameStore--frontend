@@ -3,7 +3,7 @@ E-commerce website directed to selling games with quite complex administration s
 
 > React + Bootstrap + Formik + Yup + Design in [Figma](https://www.figma.com/file/KfGp9R4EPAuza4mP0AGZw0/AGH-DB-project%3A-Shop-with-games?node-id=6%3A567)
 
-> Backed developed in another [repo](https://github.com/konradkar2/store)
+> Backed developed in another [repo](https://github.com/Matt444/GameStore--backend)
 
 ## Features
 - filter games by categories, platforms, form,
