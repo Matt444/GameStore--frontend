@@ -1,73 +1,36 @@
-# Designed according to Figma project
-https://www.figma.com/file/KfGp9R4EPAuza4mP0AGZw0/AGH-DB-project-Shop-with-games?node-id=6%3A567
+# GameStore.
+E-commerce website directed to selling games with quite complex administration system.
 
-# Getting Started with Create React App
+> React + Bootstrap + Formik + Yup + Design in [Figma](https://www.figma.com/file/KfGp9R4EPAuza4mP0AGZw0/AGH-DB-project%3A-Shop-with-games?node-id=6%3A567)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> Backed developed in another [repo](https://github.com/konradkar2/store)
 
-## Available Scripts
+## Features
+- filter games by categories, platforms, form,
+- manage bucket and buy games,
+- authentication and authorization in 2 levels -> user & admin,
+- panel for user with  orders and managing email & password,
+- panel for admin with all orders and managing games, users, categories, platforms, keys.
 
-In the project directory, you can run:
+## Getting Started
 
-### `npm start`
+Clone project and install dependecies using `npm install` then run `npm start`.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Screenshots
+> Home
+![image](https://user-images.githubusercontent.com/64275057/111546638-4518a380-8778-11eb-901b-db8a95ea12fa.png)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+> User Panel Page
+![img2](https://github.com/Matt444/store-frontend/blob/master/screenshots/2.png)
 
-### `npm test`
+> Admin Panel Page
+![image](https://user-images.githubusercontent.com/64275057/111547909-29ae9800-877a-11eb-820b-1d076eb344d1.png)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+> Admin Panel Page
+![image](https://user-images.githubusercontent.com/64275057/111547177-0e8f5880-8779-11eb-948f-dba1da68ece1.png)
 
-### `npm run build`
+> Cart Page
+![image](https://user-images.githubusercontent.com/64275057/111546933-b35d6600-8778-11eb-9432-79937ba6d3c9.png)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+> Game Page
+![img6](https://github.com/Matt444/store-frontend/blob/master/screenshots/6.png)
