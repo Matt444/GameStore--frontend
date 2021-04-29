@@ -1,4 +1,6 @@
 # GameStore.
+> NOTE: Website is currently hosted on Google cloud: https://gamestore-312212.appspot.com
+
 E-commerce website directed to selling games with quite complex administration system.
 
 > React + Bootstrap + Formik + Yup + Design in [Figma](https://www.figma.com/file/KfGp9R4EPAuza4mP0AGZw0/AGH-DB-project%3A-Shop-with-games?node-id=6%3A567)
