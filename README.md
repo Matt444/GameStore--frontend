@@ -1,5 +1,5 @@
 # GameStore.
-> NOTE: Website is currently hosted on Google cloud: https://gamestore-312212.appspot.com
+> NOTE: Website is currently hosted on Google Cloud: https://gamestore-312212.appspot.com
 
 E-commerce website directed to selling games with quite complex administration system.
 
